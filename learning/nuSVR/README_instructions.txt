@@ -15,7 +15,8 @@
 							  Gamma list 
 									> Survey the grid-search score file and select the best C and Gamma combinations and edit the tuned C and gamma lists in the param.yaml file
 
-	./2_TRAIN_MODELS.sh 	- Trains the models corresponding to the tuned C and Gamma values
+	./2_TRAIN_MODELS.sh 	- Trains the models corresponding to the tuned C and Gamma 
+							values
 
 	./3_TRAIN_ACC.sh		- Produces the train accuracy for the learned models
 							- Also writes predicted torque (or error) values to PredTau (or PredError) csv files in the savePath directory
