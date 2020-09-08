@@ -31,6 +31,8 @@ else:
 trainDataFileName = os.path.join(savePath, trainDataFileName + ".csv")
 testDataFileName = os.path.join(savePath, testDataFileName + ".csv")
 
+print("Preparing training and test data")
+
 trainData = np.genfromtxt(trainDataFileName, dtype=float, delimiter=',') # np array of 21 columns (q, qdot, qddot)
 testData = np.genfromtxt(testDataFileName, dtype=float, delimiter=',') # np array of 7 columns with each column corresponding to that joint's torque
 

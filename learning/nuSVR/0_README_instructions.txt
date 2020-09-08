@@ -2,7 +2,7 @@
 
 2) Add the thundersvm package in 'thundersvmPackage' and build.
 
-3) Build the target files here:
+3) Build the target files here (NOTE: You need to have yaml-cpp)
 
 	mkdir build
 	cd build

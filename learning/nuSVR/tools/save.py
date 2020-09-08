@@ -22,8 +22,12 @@ if learnErrorModel:
 else:
 	saveDirName = "torqueModels"
 
-saveDirName = os.path.join(learntModelLoc, saveDirName)
 
+modelSaveLocation = os.path.join(learntModelLoc,'nuSVR')
+if not os.path.isdir(modelSaveLocation):
+	os.mkdir(modelSaveLocation)
+
+saveDirName = os.path.join(modelSaveLocation,saveDirName)
 if not os.path.isdir(saveDirName):
 	os.mkdir(saveDirName)
 
@@ -33,7 +37,7 @@ trainDataStd = "trainDataStd"
 trainAcc = "trainAcc"
 testAcc = "testAcc"
 gridSearchScores_CV = "hyperParam_CV_scoreReport"
-gridSearchScores_overall = "hyperParam_CV_overall"
+gridSearchScores_overall = "hyperParam_overall_scoreReport"
 
 trainDataMean = os.path.join(os.getcwd(), trainDataMean + ".txt")
 trainDataStd = os.path.join(os.getcwd(), trainDataStd + ".txt")

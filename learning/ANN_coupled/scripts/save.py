@@ -26,8 +26,11 @@ else:
 	accuracies = "results_torqueModel"
 	gridScores = "gridScores_torqueModel"
 
-saveDirName = os.path.join(learntModelLoc, saveDirName)
+modelSaveLocation = os.path.join(learntModelLoc,'ANN_Coupled')
+if not os.path.isdir(modelSaveLocation):
+	os.mkdir(modelSaveLocation)
 
+saveDirName = os.path.join(modelSaveLocation,saveDirName)
 if not os.path.isdir(saveDirName):
 	os.mkdir(saveDirName)
 

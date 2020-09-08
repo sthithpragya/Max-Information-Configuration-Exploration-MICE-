@@ -36,9 +36,6 @@ np.random.shuffle(trainData)
 
 train_data = torch.from_numpy(trainData)
 test_data = torch.from_numpy(testData)
-torch.save(train_data, 'trainData.pt')
-torch.save(test_data, 'testData.pt')
-
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -104,6 +101,6 @@ print(results_grid)
 header = "train_mse,test_mse"
 
 if learnErrorModel:
-    np.savetxt('results_errorModel.csv',np.array(results_grid), delimiter=',',header=header,comments='')
+    np.savetxt('results_errorModel.csv',[np.array(results_grid)], delimiter=',',header=header,comments='')
 else:
-    np.savetxt('results_torqueModel.csv',np.array(results_grid), delimiter=',',header=header,comments='')
+    np.savetxt('results_torqueModel.csv',[np.array(results_grid)], delimiter=',',header=header,comments='')

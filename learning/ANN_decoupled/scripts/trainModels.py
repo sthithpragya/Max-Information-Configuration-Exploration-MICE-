@@ -39,9 +39,6 @@ np.random.shuffle(trainData)
 
 train_data = torch.from_numpy(trainData)
 test_data = torch.from_numpy(testData)
-torch.save(train_data, 'trainData.pt')
-torch.save(test_data, 'testData.pt')
-
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -90,7 +87,7 @@ for jointIndex in range(startModelIndex, endModelIndex):
         torch.save(model, 'torqueModel' + str(jointIndex) + '.pt')
 
     train_error = tools.compute_loss(model, train_input, train_target[:, jointIndex].unsqueeze(1))
-    test_error = tools.compute_loss(model, test_target[:,jointIndex].unsqueeze(1))
+    test_error = tools.compute_loss(model, test_input, test_target[:,jointIndex].unsqueeze(1))
 
     result_train = torch.empty(len(seeds), nb_folds).to(device)
     result_test = torch.empty(len(seeds), nb_folds).to(device)
@@ -109,6 +106,6 @@ for jointIndex in range(startModelIndex, endModelIndex):
     header = "train_mse,test_mse"
 
     if learnErrorModel:
-        np.savetxt('results_errorModel'+str(jointIndex)+'.csv',np.array(results_grid), delimiter=',',header=header,comments='')
+        np.savetxt('results_errorModel'+str(jointIndex)+'.csv',[np.array(results_grid)], delimiter=',',header=header,comments='')
     else:
-        np.savetxt('results_torqueModel'+str(jointIndex)+'.csv',np.array(results_grid), delimiter=',',header=header,comments='')
+        np.savetxt('results_torqueModel'+str(jointIndex)+'.csv',[np.array(results_grid)], delimiter=',',header=header,comments='')

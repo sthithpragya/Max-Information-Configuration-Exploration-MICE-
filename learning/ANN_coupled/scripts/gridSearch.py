@@ -25,6 +25,8 @@ else:
 	trainDataFileName = "normalisedTrainData"
 	testDataFileName = "normalisedTestData"
 
+print("Preparing training and test data")
+
 trainDataFileName = os.path.join(savePath, trainDataFileName + ".csv")
 testDataFileName = os.path.join(savePath, testDataFileName + ".csv")
 
