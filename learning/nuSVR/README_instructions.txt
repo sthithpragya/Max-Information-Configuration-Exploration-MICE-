@@ -1,6 +1,6 @@
 1) Configure the param.yaml in main 'learning' directory
 
-2) Build the thundersvm package inside the thundersvmPackage directory
+2) Add the thundersvm package in 'thundersvmPackage' and build.
 
 3) Build the target files here:
 
