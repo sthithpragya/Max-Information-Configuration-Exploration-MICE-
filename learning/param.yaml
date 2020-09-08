@@ -1,11 +1,11 @@
 # BASE PARAMETERS
 
 # Directories
-savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/session18_125k_gravComp"   # path of data (on which you wish to learn)
-learntModelLoc: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/learning/learnt_models"              # where to save the learnt models
+savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/session18_125k_gravComp"   # location of the 'recorded_data' directory
+learntModelLoc: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/learning/learnt_models"              # location of the 'learnt_models' directory
 
 # General Parameters
-totalJoints: 7
+totalJoints: 7          # DoF of the manipulator
 learnErrorModel: True   # False <-> Torque Models; True <-> Error Models
 crossValFoldCount: 10   # Folds for cross-validation on the training dataset
 
@@ -64,47 +64,12 @@ zeroParamCount: 29      # Due to usage of 'fixed' links, physical parameters of
                         # first 29 parameters don't have any effect.
                         # Set to 0 if not required
 
-# NOTE: Manually enter the physical parameters of the robot (wrt CAD data) 
-#       in LSR/LSROptimisation.py, line 74 onwards
+# NOTE: Manually enter the physical parameters of the robot (wrt CAD data) in LSR/LSROptimisation.py, line 74 onwards
 
-# Exernal bounds placed on physical parameters' optimisation (wrt original CAD data)
-# bounded: "absolute"
-bounded: "50%"
-# bounded: "25%"
+# Exernal bounds placed on physical parameters to make sure they lie within 
+# the selected bound rabge of the original CAD data
+
+# bounded: "absolute"   # Loose absolute bounds on the physical parameters (optimised parameters may not be physically consistent)
+bounded: "50%"          # Optimised parameters = Within 50% of CAD data
+# bounded: "25%"        # Optimised parameters = Within 25% of CAD data
 #-----------------------------------------------
-
-## Additional data
-# trainDataFileName: "/sparseFormat/sparseErrorTrainData"
-# testDataFileName: "/sparseFormat/sparseErrorTestData"
-
-# # Train and test data names must be placed in savePath.
-# # and their filenames should be relative to savePath
-# # Train and test data must be in sparse format. 
-# # Supply error data for learning error models and torque data for learning the torque models
-
-
-## For session 18 tau models
-# tunedCList: [10, 1000, 1000, 100, 1, 10, 1] 
-# tunedGammaList: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-
-## For session 18 learning error models
-# tunedCList: [1000, 1000, 1000, 100, 100, 100, 100] 
-# tunedGammaList: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-
-## For sinusoid long tau models
-# tunedCList: [100, 100, 100, 100, 10, 100, 0.1] 
-# tunedGammaList: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
-
-
-
-# FOR NN COUPLED
-    # if learnErrorModel:
-    #     nb_hidden_layers = 2
-    #     nb_hidden_neurons = 450
-    #     eta = 0.01
-    # else:
-    #     nb_hidden_layers = 1
-    #     nb_hidden_neurons = 500
-    #     eta = 0.05
-
-# tauDimension: 7         

@@ -1,3 +1,18 @@
+InvDyn_Learning Package:
+	Contains 4 sub-packages:
+		1) data_collection
+		2) data_processing
+		3) learning
+		4) testing_ID
+
+Preliminary steps:
+	> Make a directory 'recorded_data' to store the recorded and processed data for learning
+	> Make a directory 'learnt_models' to store the learnt models of inverse dynamics
+	> Place the 'data_collection' and 'testing_id' packages inside the catkin workspace
+
+
+The package specific information is available as README files in the respective packages.
+
 edit location of yaml file in:
 	mainDir/catkin_ws/src/iiwa_ros/iiwa_data_collection/scripts/recorderPositionController.py
 	
