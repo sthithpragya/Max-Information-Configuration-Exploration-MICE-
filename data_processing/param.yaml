@@ -1,0 +1,96 @@
+## FILE LOCATIONS
+savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/misc5" # location of whichever data that is to be processed
+#-----------------------------------------------
+
+## TYPE OF EQUALISATION
+# equaliser: "select" # selecting the best sampleBatchSize * finalBatchCount number of points
+equaliser: "none" # no equalising
+
+#-----------------------------------------------
+
+## PARAMETERS ASSOCIATED WITH DATA SUB-ASMPLING (VIA SELECT-EQUALISATION METHOD)
+# together the bestPointCount and randomPointCount make up the training (and cross-validation) set(s)
+# For session18 PolarDS data
+# bestPointCount: 100000 
+# randomPointCount: 50000 
+
+# For sinusoid
+bestPointCount: 150000 
+randomPointCount: 0 
+
+# Determine the size of block around a data-point for calculating the point's priority as a part of its relevance score
+qBelt: 0.05
+qDotBelt: 0.05
+
+# If the data has been collected for learning and predicting KUKA's secret gravity compenastion torques
+learnGravComp: False
+
+# Filtering the recorded data
+toFilterQ: False
+toFilterQDot: False
+toFilterTau: False
+
+# To filter, we are using the Moving Average filter. Specify the size of the window of the Moving Average filter
+qFilterVal: 41
+qDotFilterVal: 41
+tauFilterVal: 41
+
+# For normal learning purposes: 
+  # All filtering - OFF
+
+# For learning to predict gravity compensation
+  # Filter only velocity @ 41 elements per window 
+
+
+# Inverse of publishing frequency
+dt: 0.005
+
+useArtVel: False # set to True incase the robot (or simulator) is giving incorrect or no joint velocities. NOTE: These velocities are not filtered initially.
+
+
+qBound: 0.3
+qDotBound: 0.3
+qMargin: 0.0
+qDotMargin: 0.0
+
+
+
+
+
+totalJoints: 7
+
+qLimUpper:
+  - 2.7925 
+  - 1.2217
+  - 2.7925
+  - 1.9198
+  - 2.7925
+  - 1.9198
+  - 2.8797
+
+qLimLower:
+  - -2.7925 
+  - -1.2217
+  - -2.7925
+  - -1.9198
+  - -2.7925
+  - -1.9198
+  - -2.8797
+
+qDotLimUpper:
+  - 1.4835
+  - 1.4835
+  - 1.7453
+  - 1.3089
+  - 2.2689
+  - 2.3561
+  - 2.3561
+
+qDotLimLower:
+  - -1.4835
+  - -1.4835
+  - -1.7453
+  - -1.3089
+  - -2.2689
+  - -2.3561
+  - -2.3561
