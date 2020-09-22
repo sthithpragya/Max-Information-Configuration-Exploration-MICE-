@@ -1,25 +1,25 @@
 #include <data_collection/HLPolarDS.h>
 // Helper functions
 std::vector<double> cart2pol(double q, double qDot){
-	
-	std::vector<double> inPolar;
-	double theta = atan2(qDot, q);
-	double rho = std::sqrt(std::pow(qDot,2.0)+std::pow(q,2.0));
-	inPolar.push_back(theta);
-	inPolar.push_back(rho);
-	
-	return inPolar;
+    
+    std::vector<double> inPolar;
+    double theta = atan2(qDot, q);
+    double rho = std::sqrt(std::pow(qDot,2.0)+std::pow(q,2.0));
+    inPolar.push_back(theta);
+    inPolar.push_back(rho);
+    
+    return inPolar;
 }
 
 std::vector<double> pol2cart(double theta, double rho){
-	
-	std::vector<double> inCartesian;
-	double q = rho*cos(theta);
-	double qDot = rho*sin(theta);	
-	inCartesian.push_back(q);
-	inCartesian.push_back(qDot);
+    
+    std::vector<double> inCartesian;
+    double q = rho*cos(theta);
+    double qDot = rho*sin(theta);   
+    inCartesian.push_back(q);
+    inCartesian.push_back(qDot);
 
-	return inCartesian;
+    return inCartesian;
 }
 
 
@@ -41,8 +41,8 @@ HLPolarDS::HLPolarDS(ros::NodeHandle &n,
     double beta,
     double randPointCount,
     double increm,
-    double angleDispLimit,
-    std::string looping):
+    double angleDispLimit):
+    // ,std::string looping):
     
     _loopRate(pubFreq),
     _prevRobotState(qStart, qDotStart, std::vector<double> (totalJoints, 0)),
@@ -67,7 +67,7 @@ HLPolarDS::HLPolarDS(ros::NodeHandle &n,
         _randPointCount = randPointCount;
         _increm = increm;
         _angleDispLimit = angleDispLimit;
-        _looping = looping;
+        // _looping = looping;
     
         // used during execution
 
@@ -89,16 +89,14 @@ HLPolarDS::HLPolarDS(ros::NodeHandle &n,
         _cyclePointCount = std::vector<int> (totalJoints, 0);
         _switchCycle = std::vector<bool> (totalJoints, false);
         _haltCycle = std::vector<bool> (totalJoints, false);
-        
-        _haltCount = 0;
-        
+                
         _commandPose.data = qStart;
         _commandVel.data = qDotStart;
         _timeElapsed.data = 0.0;
 
         Eigen::VectorXd _sigma(2);
-        _sigma(0) = 0.0025; // sigmaR
-        _sigma(1) = 0.01;   // sigmaC
+        _sigma(0) = 0.005; // sigmaR
+        _sigma(1) = 0.005;   // sigmaC
 
         _pdfs.sigma = _sigma;
         _pdfs.mu.clear();
@@ -167,7 +165,7 @@ void HLPolarDS::updateRobotState(const sensor_msgs::JointState::ConstPtr& msg){
     std::vector<double> newVel = msg->velocity;
     Eigen::VectorXd newVelEigen = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(newVel.data(), newVel.size());
     Eigen::VectorXd currentVelEigen = Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(_currentRobotState.jointVel.data(), _currentRobotState.jointVel.size());
-    Eigen::VectorXd newAccEigen = (newVelEigen-currentVelEigen)/_dT;
+    Eigen::VectorXd newAccEigen = (newVelEigen-currentVelEigen)*_pubFreq;
     
     _currentRobotState.jointAcc = std::vector<double> (newAccEigen.data(), newAccEigen.data() + newAccEigen.rows() * newAccEigen.cols());
     _currentRobotState.jointVel = newVel;
@@ -197,16 +195,18 @@ void HLPolarDS::checkHaltCycle(){
 
     for(int jointIndex = 0; jointIndex < _totalJoints; jointIndex++){
         if(_switchCycle[jointIndex]){
+            _angleDisp[jointIndex] = 0.0;
+            _cyclePointCount[jointIndex] = 0.0;
             if(std::fabs(_qDotCurrent[jointIndex]) < 0.005){
                 _haltCycle[jointIndex] = true;
-                _haltCount = _haltCount + 1;
             }
         }
 
         haltStatus = haltStatus + std::to_string(int(_haltCycle[jointIndex])) + "     ";
     }
+
+
     std::cout<<"Halt status:    "<<haltStatus<<std::endl;
-    std::cout<<"Halt count:     "<<_haltCount<<std::endl;
 }
 
 void HLPolarDS::getNextPoint(){
@@ -270,26 +270,23 @@ void HLPolarDS::getNextPoint(){
             _qNext[jointIndex] = _qCurrent[jointIndex];
             _qDotNext[jointIndex] = 0.0;
         }
-
     }
-
-    std::cout<<"Target count:   "<<_targetCount<<std::endl;
-    std::cout<<"\n"<<std::endl;
-
 }
 
 void HLPolarDS::getNextTarget(){
-    if(_haltCount >= _totalJoints){
-        // Reset trackers
-        _targetCount = _targetCount + 1;
-        _haltCount = 0;
-        _switchCycle = std::vector<bool> (_totalJoints, false);
-        _haltCycle = std::vector<bool> (_totalJoints, false);
+    if(std::all_of(_switchCycle.begin(), _switchCycle.end(), [](bool v1) { return v1; })){
+        if(std::all_of(_haltCycle.begin(), _haltCycle.end(), [](bool v2) { return v2; })){
 
-        _pdfs.updatePdfs(_phiDes);  // adds (r,c) to the log
-        _pdfs.w = 1.0/_targetCount;
+            // Reset trackers
+            _targetCount = _targetCount + 1;
+            _switchCycle = std::vector<bool> (_totalJoints, false);
+            _haltCycle = std::vector<bool> (_totalJoints, false);
 
-        _phiDes.updatePhi(new_target_smart());
+            _pdfs.updatePdfs(_phiDes);  // adds (r,c) to the log
+            _pdfs.w = 1.0/_targetCount;
+
+            _phiDes.updatePhi(new_target_smart());
+        }
     }
 }
 
@@ -334,9 +331,9 @@ HLPolarDS::Phi HLPolarDS::new_target_smart(){
             // harvest Yopt as Phi from return
         }
 
+        std::random_shuffle(yCandidates.begin(), yCandidates.end());
         int indxF = std::max_element(yCandidates.begin(),yCandidates.end()) - yCandidates.begin();
-        // selects the first minimum point
-
+        
         return phiCandidates[indxF];
 }
 
@@ -422,6 +419,8 @@ void HLPolarDS::mainLoop(){
     checkHaltCycle();
     
     getNextTarget();
+    std::cout<<"Target count:   "<<_targetCount<<std::endl;
+    std::cout<<"\n"<<std::endl;
 }
 
 

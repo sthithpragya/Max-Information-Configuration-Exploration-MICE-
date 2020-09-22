@@ -21,7 +21,7 @@ int main (int argc, char** argv){
     double randPointCount;
     double increm;
     double angleDispLimit;
-    std::string looping;
+    // std::string looping;
 
     n.getParam("/publishToRobot", publishToRobot);
     n.getParam("/robotJointState", robotJointState);
@@ -40,14 +40,15 @@ int main (int argc, char** argv){
     n.getParam("/randPointCount", randPointCount);
     n.getParam("/increm", increm);
     n.getParam("/angleDispLimit", angleDispLimit);
-    n.getParam("/looping", looping);
+    // n.getParam("/looping", looping);
 
     HLPolarDS trajectoryGen(n, publishToRobot, robotJointState, 
             qStart, qDotStart, qLimUpper, qLimLower, qDotLimUpper, qDotLimLower, 
             rLim, totalJoints, 
             pubFreq, 
             dT, alpha, beta, randPointCount, increm, 
-            angleDispLimit, looping);
+            angleDispLimit);
+            // ,looping);
 
     if (!trajectoryGen.init()){
         return -1;

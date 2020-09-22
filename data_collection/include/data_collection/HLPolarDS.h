@@ -58,7 +58,7 @@ class HLPolarDS{
                 double _angleDispLimit;
 
             // Other Strings
-                std::string _looping;
+                // std::string _looping;
 
         /** 
          * --------------------------------------
@@ -67,7 +67,6 @@ class HLPolarDS{
         **/
 
             // Ints and Doubles
-                int _haltCount;                             // Count of joints which have completed their cycles
                 int _targetCount;                           // Count of cycles each joint has completed
 
             // Vectors
@@ -244,8 +243,8 @@ class HLPolarDS{
                 double beta,
                 double randPointCount,
                 double increm,
-                double angleDispLimit,
-                std::string looping);                      
+                double angleDispLimit);
+                // ,std::string looping);                      
 
             bool init();                                    // Initialize node
             void run();                                     // Run node
