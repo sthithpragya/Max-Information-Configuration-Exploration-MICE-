@@ -5,14 +5,27 @@ InvDyn_Learning Package:
 		3) learning
 		4) testing_ID
 
+Prerequisites:
+	> ROS - ROS: tested in Melodic and Kinetic
+	> SpaceVecAlg
+	> ROS Control *
+	> RBDyn *
+	> mc_rbdyn_urdf *
+	> corrade *
+	> robot_controllers *
+	
 Preliminary steps:
 	> Make a directory 'recorded_data' to store the recorded and processed data for learning
 	> Make a directory 'learnt_models' to store the learnt models of inverse dynamics
 	> Place the 'data_collection' and 'testing_id' packages inside the catkin workspace
 
 
+
 The package specific information is available as README files in the respective packages.
 
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
 edit location of yaml file in:
 	mainDir/catkin_ws/src/iiwa_ros/iiwa_data_collection/scripts/recorderPositionController.py
 	

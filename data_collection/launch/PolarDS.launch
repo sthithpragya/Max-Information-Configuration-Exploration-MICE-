@@ -1,0 +1,11 @@
+<launch>
+
+	<rosparam file="$(find data_collection)/config/param.yaml" />
+	
+    <node pkg="data_collection" type="recorderPositionController.py" name="recorderPositionController" output="screen">
+    </node>
+
+	<node pkg="data_collection" type="HLPolarDS_node" name="HLPolarDS_node" output="screen">
+    </node>
+
+</launch>
