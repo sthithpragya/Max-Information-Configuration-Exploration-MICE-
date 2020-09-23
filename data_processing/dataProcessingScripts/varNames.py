@@ -14,6 +14,7 @@ rarityFactor = paramLoaded["rarityFactor"]
 bestPointCount = paramLoaded["bestPointCount"]
 randomPointCount = paramLoaded["randomPointCount"]
 recordingResultantTorque = paramLoaded["recordingResultantTorque"]
+eigSpreadBatchSize = paramLoaded["eigSpreadBatchSize"]
 
 useArtificialVel = paramLoaded["useArtVel"]
 totalJoints = paramLoaded["totalJoints"]
@@ -54,7 +55,7 @@ for jointIndex in range(totalJoints):
 	jointVelNames[jointIndex] = 'J'+ str(jointIndex+1) + 'dot'
 	jointAccNames[jointIndex] = 'J'+ str(jointIndex+1) + 'ddot'
 	jointTorqueNames[jointIndex] = 'Tau'+ str(jointIndex+1)
-    predTorqueNames[i] = "pred" + jointTorqueNames[i]
+	predTorqueNames[jointIndex] = "pred" + jointTorqueNames[jointIndex]
 
 qResolutionList = []
 qDotResolutionList = []

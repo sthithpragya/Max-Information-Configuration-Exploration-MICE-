@@ -1,3 +1,5 @@
 learning/nuSVR/build/
 learning/nuSVR/thundersvmPackage/build/
+recorded_data/
+learnt_models/
 *.pyc

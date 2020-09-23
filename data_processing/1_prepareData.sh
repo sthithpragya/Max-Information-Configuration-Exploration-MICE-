@@ -2,4 +2,5 @@
 python dataProcessingScripts/joint2TaskActual.py
 python dataProcessingScripts/joint2TaskDesired.py
 python3 dataProcessingScripts/dataProcess.py
+python3 dataProcessingScripts/getEigSpread.py
 python3 dataProcessingScripts/sortEqualiseData.py
