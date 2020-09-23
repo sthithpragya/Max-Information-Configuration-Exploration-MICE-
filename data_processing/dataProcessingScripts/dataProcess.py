@@ -9,26 +9,7 @@ import yaml
 import io
 import random
 
-
-with open(r'param.yaml') as stream:
-	paramLoaded = yaml.safe_load(stream)
-
-
-savePath = paramLoaded["savePath"]
-useArtificialVel = paramLoaded["useArtVel"]
-learnGravComp = paramLoaded["learnGravComp"]
-totalJoints = paramLoaded["totalJoints"]
-
-qLimLower = paramLoaded["qLimLower"]
-qLimUpper = paramLoaded["qLimUpper"]
-
-qDotLimLower = paramLoaded["qDotLimLower"]
-qDotLimUpper = paramLoaded["qDotLimUpper"]
-
-qBound = paramLoaded["qBound"]
-qDotBound = paramLoaded["qDotBound"]
-qMargin = paramLoaded["qMargin"]
-qDotMargin = paramLoaded["qDotMargin"]
+from varNames import *
 
 AJ = "recordedActualJointData"
 AT = "computedActualTaskData"
@@ -47,26 +28,13 @@ DT = os.path.join(savePath, DT + ".csv")
 time = os.path.join(savePath, time + ".csv")
 PAD = os.path.join(savePath, PAD + ".csv")
 PDD = os.path.join(savePath, PDD + ".csv")
-
-jointAngleNames = [[] for i in range(totalJoints)]
-jointVelNames = [[] for i in range(totalJoints)]
-jointTorqueNames = [[] for i in range(totalJoints)]
-jointAccNames = [[] for i in range(totalJoints)]
-taskColNames = ['X', 'Y', 'Z']
-timeName = ['time']
-
-for jointIndex in range(totalJoints):
-	jointAngleNames[jointIndex] = 'J' + str(jointIndex+1)
-	jointVelNames[jointIndex] = 'J'+ str(jointIndex+1) + 'dot'
-	jointAccNames[jointIndex] = 'J'+ str(jointIndex+1) + 'ddot'
-	jointTorqueNames[jointIndex] = 'Tau'+ str(jointIndex+1)
 	
-#Opening the recorded datas
+##Opening the recorded datas
 AJdata = pandas.read_csv(AJ, names=jointAngleNames + jointVelNames + jointTorqueNames)
 DJdata = pandas.read_csv(DJ, names=jointAngleNames + jointVelNames)
 ATdata = pandas.read_csv(AT, names=taskColNames)
 DTdata = pandas.read_csv(DT, names=taskColNames)
-timeData = pandas.read_csv(time, names=timeName)  # list of time floats
+timeData = pandas.read_csv(time, names=timeName)
 
 #Removing the first row since it contains 0 or garbage entries
 AJdata = AJdata.drop(0, axis=0)
@@ -116,14 +84,14 @@ if useArtificialVel:
 	ATdata = ATdata[~nanRowsVel]
 	DTdata = DTdata[~nanRowsVel]
 
-	if not learnGravComp:
-		zeroRowsVel = (ArtificialVelData.T != 0).any()
-		ArtificialVelData = ArtificialVelData[zeroRowsVel]
-		AJdata = AJdata[zeroRowsVel]
-		timeData = timeData[zeroRowsVel]
-		DJdata = DJdata[zeroRowsVel]
-		ATdata = ATdata[zeroRowsVel]
-		DTdata = DTdata[zeroRowsVel]
+	# Removing duplicate entries.
+	zeroRowsVel = (ArtificialVelData.T != 0).any()
+	ArtificialVelData = ArtificialVelData[zeroRowsVel]
+	AJdata = AJdata[zeroRowsVel]
+	timeData = timeData[zeroRowsVel]
+	DJdata = DJdata[zeroRowsVel]
+	ATdata = ATdata[zeroRowsVel]
+	DTdata = DTdata[zeroRowsVel]
 
 	# replacing original with artifical velocity
 	AJdata = pandas.concat((AJdata[jointAngleNames], ArtificialVelData[jointVelNames], AJdata[jointTorqueNames]), axis=1)
@@ -162,17 +130,17 @@ ATdata = ATdata[~nanRows]
 DTdata = DTdata[~nanRows]
 
 # Removing duplicate entries. 
-# Not done when learning the prediction of gravity compenastion torques because the recorded data points are purposely made to have ~ 0 vel and acc
-if not learnGravComp:
-	zeroRows = (AJaccData.T != 0).any()
-	AJaccData = AJaccData[zeroRows]
-	AJdata = AJdata[zeroRows]
-	timeData = timeData[zeroRows]
-	DJdata = DJdata[zeroRows]  
-	ATdata = ATdata[zeroRows]
-	DTdata = DTdata[zeroRows]
+zeroRows = (AJaccData.T != 0).any()
+AJaccData = AJaccData[zeroRows]
+AJdata = AJdata[zeroRows]
+timeData = timeData[zeroRows]
+DJdata = DJdata[zeroRows]  
+ATdata = ATdata[zeroRows]
+DTdata = DTdata[zeroRows]
+
 
 # The processed data
+
 # The actual or real robot behaviour
 processedActualData = pandas.concat((timeData[timeName], AJdata[jointAngleNames+jointVelNames], AJaccData[jointAccNames], AJdata[jointTorqueNames]), axis=1)
 processedActualData.to_csv(PAD, index = False, header=True)
@@ -190,13 +158,7 @@ unsortedData = pandas.read_csv(PAD).iloc[:, 1:29]
 rowCount = len(unsortedData)
 blockData = pandas.DataFrame()
 
-qResolutionList = []
-qDotResolutionList = []
-
-for jointIndex in range(totalJoints):
-	qResolutionList.append(math.floor((qLimUpper[jointIndex]-qLimLower[jointIndex]-2*qMargin)/(2*qBound)))
-	qDotResolutionList.append(math.floor((qDotLimUpper[jointIndex]-qDotLimLower[jointIndex]-2*qDotMargin)/(2*qDotBound)))
-
+# Segregating the data-entries wrt to the modules of the phase-space grid they lie in 
 for jointIndex in range(totalJoints):
 	info.write("joint: " + str(jointIndex + 1) + "\n") 	# Divisions of phase space along joint angle axis
 	qResolution = int(qResolutionList[jointIndex])	# Divisions of phase space along joint velocity axis
@@ -258,24 +220,6 @@ for jointIndex in range(totalJoints):
 		blockIndices.append(blockIndex)
 
 	blockData.insert(jointIndex, jointAngleNames[jointIndex], pandas.Series(blockIndices))
-
-	# dataDistribList completely filled for jointIndex
-	# find the least number of data entries from among all the blocks
-	minDataCount = rowCount
-	for i in range(len(dataDistribList)):
-		if len(dataDistribList[i]) < minDataCount:
-			minDataCount = len(dataDistribList[i])
-
-	info.write("data points per block: " + str(minDataCount) + "\n")
-	info.write("cumulative data points: " + str(minDataCount*qResolution*qDotResolution) + "\n") 
-	info.write("------------------------------" + "\n") 
-	info.write("\n") 
-	
-	sortedList = []
-	# randomly selecting the least number of entries from each block
-	for i in range(len(dataDistribList)):
-		sampledList = random.choices(dataDistribList[i], k=minDataCount)
-		sortedList = sortedList + sampledList
 
 blockIndicesFileName = "blockIndices"
 blockIndicesFileName1 = os.path.join(savePath, blockIndicesFileName + ".csv")

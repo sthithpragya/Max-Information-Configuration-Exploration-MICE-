@@ -1,11 +1,16 @@
 ## FILE LOCATIONS
-savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/misc5" # location of whichever data that is to be processed
+savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
 #-----------------------------------------------
 
 ## TYPE OF EQUALISATION
 # equaliser: "select" # selecting the best sampleBatchSize * finalBatchCount number of points
-equaliser: "none" # no equalising
+equaliser: "random" # random selection of points
+# equaliser: "select" # no subsampling
 
+# NOTE: The 'select' method for equalising implements score based subsampling
+# Atleast one of the following factors must be true
+rarityFactor: True
+priorityFactor: True
 #-----------------------------------------------
 
 ## PARAMETERS ASSOCIATED WITH DATA SUB-ASMPLING (VIA SELECT-EQUALISATION METHOD)
@@ -22,9 +27,6 @@ randomPointCount: 0
 qBelt: 0.05
 qDotBelt: 0.05
 
-# If the data has been collected for learning and predicting KUKA's secret gravity compenastion torques
-learnGravComp: False
-
 # Filtering the recorded data
 toFilterQ: False
 toFilterQDot: False
@@ -35,11 +37,12 @@ qFilterVal: 41
 qDotFilterVal: 41
 tauFilterVal: 41
 
-# For normal learning purposes: 
+# For usual learning purposes: 
   # All filtering - OFF
 
-# For learning to predict gravity compensation
-  # Filter only velocity @ 41 elements per window 
+recordingResultantTorque: True 
+# True - The torque-sensor senses the resultant torque (i.e. the applied torque was -(recorded value))
+# False - Otherwise
 
 
 # Inverse of publishing frequency
@@ -47,14 +50,10 @@ dt: 0.005
 
 useArtVel: False # set to True incase the robot (or simulator) is giving incorrect or no joint velocities. NOTE: These velocities are not filtered initially.
 
-
 qBound: 0.3
 qDotBound: 0.3
 qMargin: 0.0
 qDotMargin: 0.0
-
-
-
 
 
 totalJoints: 7
