@@ -1,13 +1,13 @@
 # GENERAL PARAMETERS=
 # Path where data is recorded
-savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/misc5"
+savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/sinsuoidal_test"
 #------------------------------------------
 
 # ROS PARAMETERS
 # Topic to send command to manipulator
 publishToRobot: "/iiwa/PositionController/command" # type -> std_msgs::Float64MultiArray
 
-# Sensor readings from the manipulator
+# Topic to read the robot sensor measurements 
 robotJointState: "/iiwa/joint_states" # type -> sensor_msgs::JointState
 
 # NOTE: If the desired message types for these topics differ, 
@@ -15,7 +15,6 @@ robotJointState: "/iiwa/joint_states" # type -> sensor_msgs::JointState
 
 pubFreq: 200
 #------------------------------------------
-
 # ROBOT PARAMETERS
 
 totalJoints: 7
@@ -56,44 +55,9 @@ qDotLimLower:
   - -2.3561
   - -2.3561
 
-# qLimUpper:
-#   - 1.5 
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-
-# qLimLower:
-#   - -1.5 
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-
-# qDotLimUpper:
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-#   - 1.5
-
-# qDotLimLower:
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
-#   - -1.5
 #------------------------------------------
 
-# PolarDS PARAMETERS
+  # PolarDS PARAMETERS
 dT: 0.005
 alpha: 1.0
 beta: 0.5
@@ -106,13 +70,11 @@ rLim:
 #------------------------------------------
 
 # TRAJECTORY PARAMETERS
-looping: "open" 
-# looping: "closed"
+trajectoryType: "HLPolarDS"
+# trajectoryType: "sinusoid"
 
-# open    - DS uses the desired joint position and velocity (as computed by the DS) to compute the subsequent trajectory
-# closed  - DS uses the actual joint position and velocity to compute the subsequent phase space trajectory
-
-#Initial manipulator configuration (before starting data collection)
+# HLPolarDS parameters
+#Manipulator's initial goal configuration (on starting data collection using HLPolarDS)
 qStart: 
   - -0.2
   - 1.0
@@ -131,16 +93,17 @@ qDotStart:
   - 0.0
   - 0.0
 
+# Sinusoidal parameters
 
 
 
 
 
 # #------------------------------------------------------------------
+# ## Not used
 # #------------------------------------------------------------------
 
 # #-------------------------------------------
-# ## Not used
 # excitationTraj: "PolarDS"
 # # excitationTraj: "Sinusoid"
 
@@ -253,3 +216,12 @@ qDotStart:
 
 # # qLim = {160*(M_PI/180), 70*(M_PI/180), 160*(M_PI/180), 110*(M_PI/180), 160*(M_PI/180), 110*(M_PI/180), 165*(M_PI/180)};
 # # qDotLim = {85*(M_PI/180), 85*(M_PI/180), 100*(M_PI/180), 75*(M_PI/180), 130*(M_PI/180), 135*(M_PI/180), 135*(M_PI/180)};
+
+
+
+## Not Used
+# looping: "open" 
+# looping: "closed"
+
+# open    - DS uses the desired joint position and velocity (as computed by the DS) to compute the subsequent trajectory
+# closed  - DS uses the actual joint position and velocity to compute the subsequent phase space trajectory

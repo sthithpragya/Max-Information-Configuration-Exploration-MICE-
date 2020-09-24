@@ -175,7 +175,7 @@ for jointIndex in range(totalJoints):
 	qSpace = np.linspace(qLimLower[jointIndex]+qMargin,
 						 qLimUpper[jointIndex]-qMargin, num=qResolution+1)
 
-	qDotSpace = np.linspace(-qDotLimLower[jointIndex]+qDotMargin,
+	qDotSpace = np.linspace(qDotLimLower[jointIndex]+qDotMargin,
 							qDotLimUpper[jointIndex]-qDotMargin, num=qDotResolution+1)
 
 	for rowIndex in range(rowCount):
@@ -213,7 +213,7 @@ for jointIndex in range(totalJoints):
 					qDotBlockIndex = qDotResolutionIndex
 					break
 
-		blockIndex = qResolution * qDotResolutionIndex + qResolutionIndex
+		blockIndex = qResolution * qDotBlockIndex + qBlockIndex
 		tempData = dataDistribList[blockIndex]
 		tempData.append(rowIndex) 
 
@@ -222,5 +222,5 @@ for jointIndex in range(totalJoints):
 	blockData.insert(jointIndex, jointAngleNames[jointIndex], pandas.Series(blockIndices))
 
 blockIndicesFileName = "blockIndices"
-blockIndicesFileName1 = os.path.join(savePath, blockIndicesFileName + ".csv")
-blockData.to_csv(blockIndicesFileName1, index=False, header=True)
+blockIndicesFileName = os.path.join(savePath, blockIndicesFileName + ".csv")
+blockData.to_csv(blockIndicesFileName, index=False, header=True)

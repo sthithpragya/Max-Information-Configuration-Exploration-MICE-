@@ -40,6 +40,7 @@ int main (int argc, char** argv){
     n.getParam("/randPointCount", randPointCount);
     n.getParam("/increm", increm);
     n.getParam("/angleDispLimit", angleDispLimit);
+    n.getParam("/trajectoryType", trajectoryType);
     // n.getParam("/looping", looping);
 
     HLPolarDS trajectoryGen(n, publishToRobot, robotJointState, 
