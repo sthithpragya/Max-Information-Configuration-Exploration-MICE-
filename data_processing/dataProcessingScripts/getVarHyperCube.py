@@ -18,6 +18,10 @@ rawDataFileName = os.path.join(savePath, rawDataFileName + ".csv")
 hyperCubeVarFileName = "hyperCubeVar"
 hyperCubeVarFileName = os.path.join(savePath, hyperCubeVarFileName + ".csv")
 
+hyperCubeIndicesFileName = "hyperCubeIndices"
+hyperCubeIndicesFileName = os.path.join(savePath, hyperCubeIndicesFileName + ".csv")
+
+
 rawData = np.genfromtxt(rawDataFileName, delimiter=',', dtype=float, skip_header=1)
 jointData = rawData[:,1:1+(2*totalJoints)]
 
@@ -27,22 +31,33 @@ iterCount = int(dataSize/eigSpreadBatchSize)
 print("Calculating the cross-randomness")
 
 indicesRange = [list(range(4)) for i in range(totalJoints)] # Joint angle has 2 indices - {0,1} (whether negative or positive), Joint velocity has 2 indices - {0,1} (whether negative or positive)
+# Combined we have 4 indices {0,1,2,3}
 subCubeSize = 4**(totalJoints)
 
 variance = []
-hyperCubeIndices = []
+hyperCubeIndices = [[] for i in range(dataSize)]
 
+file1 = open(hyperCubeIndicesFileName, 'w+', newline ='')   
+
+# Calculating the indices
 for dataIndex in range(dataSize):
 	print("Data entry: ", dataIndex, "/", dataSize)
 	phaseIndices = [[] for i in range(totalJoints)]
+
 	for jointIndex in range(totalJoints):
 		qIndex = int(jointData[dataIndex, jointIndex] > 0)
 		qDotIndex = int(jointData[dataIndex, jointIndex+totalJoints] > 0)
 		phaseIndices[jointIndex] = 2*qDotIndex + qIndex 
 
 	hyperCubeIndex = getHyperCubeIndex(phaseIndices, indicesRange)
-	hyperCubeIndices = hyperCubeIndices + [hyperCubeIndex]
+	hyperCubeIndices[dataIndex] = [hyperCubeIndex]
 
+# Writing the indices to csv
+with file1:     
+	write = csv.writer(file1)
+	write.writerows(hyperCubeIndices)
+
+# Calculating the variances
 for iter in range(iterCount):
 	print("Iteration count: ", iter, "/", iterCount)
 	pointCounterSubCube = [0 for i in range(subCubeSize)] # Keeps a track of number of points in each sub-cube of the main 14 dimensional hypercube
