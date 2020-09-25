@@ -33,6 +33,10 @@ eigSpread_sinusoid_fileName_block = "/home/sthithpragya/Study/Thesis/InvDyn_Lear
 variance_PolarDS_fileName = "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_ID1/hyperCubeVar.csv"
 variance_sinusoid_fileName = "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long/hyperCubeVar.csv"
 
+KLdiv_PolarDS_fileName = "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_ID1/KLDivergence.csv"
+KLdiv_sinusoid_fileName = "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long/KLDivergence.csv"
+
+
 for baseIter in range(11):
     plt.figure(10+baseIter)
     eigSpread_PolarDS_fileName_block_temp = eigSpread_PolarDS_fileName_block + "_" + str(baseIter) + ".csv"
@@ -58,9 +62,27 @@ variance_PolarDS = np.genfromtxt(variance_PolarDS_fileName, delimiter=',', dtype
 variance_sinusoid = np.genfromtxt(variance_sinusoid_fileName, delimiter=',', dtype=float)
 
 plt.plot(list(range(len(variance_PolarDS.tolist()))), variance_PolarDS.tolist(), label='PolarDS')
-plt.plot(list(range(len(variance_sinusoid.tolist()))), variance_sinusoid.tolist(), linestyle=':', label='Sinusoid')
+plt.plot(list(range(len(variance_sinusoid.tolist()))), variance_sinusoid.tolist(), label='Sinusoid')
+plt.plot(list(range(len(variance_PolarDS.tolist()))), (1/variance_PolarDS).tolist(), label='Inv PolarDS')
+plt.plot(list(range(len(variance_sinusoid.tolist()))), (1/variance_sinusoid).tolist(), label='Inv Sinusoid')
 plt.xlabel('Time Index (1 timestep = 1000 entries)')
 plt.ylabel('Variance in number of entries in sub-cubes of the 14-D hypercube')
+plt.legend()
+
+
+plt.figure(31)
+kld_PolarDS = np.genfromtxt(KLdiv_PolarDS_fileName, delimiter=',', dtype=float)
+kld_sinusoid = np.genfromtxt(KLdiv_sinusoid_fileName, delimiter=',', dtype=float)
+
+print(kld_PolarDS)
+print(kld_sinusoid)
+print(kld_PolarDS.tolist())
+print(kld_sinusoid.tolist())
+
+plt.plot(list(range(len(kld_PolarDS.tolist()))), kld_PolarDS.tolist(), label='PolarDS')
+plt.plot(list(range(len(kld_sinusoid.tolist()))), kld_sinusoid.tolist(), label='Sinusoid')
+plt.xlabel('Time Index (1 timestep = 1000 entries)')
+plt.ylabel('KLDivergence')
 plt.legend()
 
 plt.show()

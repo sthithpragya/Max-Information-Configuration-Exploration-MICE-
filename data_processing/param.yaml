@@ -1,12 +1,12 @@
 ## FILE LOCATIONS
-# savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusid_data_long" # location of whichever data that is to be processed
+# savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
 savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
 #-----------------------------------------------
 
 ## TYPE OF EQUALISATION
 # equaliser: "select" # selecting the best sampleBatchSize * finalBatchCount number of points
-equaliser: "random" # random selection of points
-# equaliser: "select" # no subsampling
+# equaliser: "random" # random selection of points
+equaliser: "none" # no subsampling
 
 # NOTE: The 'select' method for equalising implements score based subsampling
 # Atleast one of the following factors must be true

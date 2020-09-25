@@ -4,6 +4,7 @@ InvDyn_Learning Package:
 		2) data_processing
 		3) learning
 		4) testing_ID
+		5) error_computation (requires *)
 
 Prerequisites:
 	> ROS - ROS: tested in Melodic and Kinetic

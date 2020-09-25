@@ -1,6 +1,7 @@
 import yaml
 import io
 import math
+import numpy as np
 
 with open(r'param.yaml') as stream:
 	paramLoaded = yaml.safe_load(stream)
@@ -64,6 +65,9 @@ for jointIndex in range(totalJoints):
 	qResolutionList.append(math.floor((qLimUpper[jointIndex]-qLimLower[jointIndex]-2*qMargin)/(2*qBound)))
 	qDotResolutionList.append(math.floor((qDotLimUpper[jointIndex]-qDotLimLower[jointIndex]-2*qDotMargin)/(2*qDotBound)))
 
+
+
+#############################################
 '''
 			 3|12 13 14 15
 Index_2  Y   2|8  9  10 11
@@ -85,3 +89,6 @@ def getHyperCubeIndex(indices, indicesRange): # indices -> 1 x totalJoints; indi
 		indexRangeSize = indexRangeSize*len(indicesRange[jointIndex])
 
 	return hyperCubeIndex
+##############################################
+
+

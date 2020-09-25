@@ -36,6 +36,7 @@ subCubeSize = 4**(totalJoints)
 
 variance = []
 hyperCubeIndices = [[] for i in range(dataSize)]
+hyperCubeIndicesToFile = [[] for i in range(dataSize)]
 
 file1 = open(hyperCubeIndicesFileName, 'w+', newline ='')   
 
@@ -50,12 +51,13 @@ for dataIndex in range(dataSize):
 		phaseIndices[jointIndex] = 2*qDotIndex + qIndex 
 
 	hyperCubeIndex = getHyperCubeIndex(phaseIndices, indicesRange)
-	hyperCubeIndices[dataIndex] = [hyperCubeIndex]
+	hyperCubeIndices[dataIndex] = hyperCubeIndex
+	hyperCubeIndicesToFile[dataIndex] = [hyperCubeIndex]
 
 # Writing the indices to csv
 with file1:     
 	write = csv.writer(file1)
-	write.writerows(hyperCubeIndices)
+	write.writerows(hyperCubeIndicesToFile)
 
 # Calculating the variances
 for iter in range(iterCount):
