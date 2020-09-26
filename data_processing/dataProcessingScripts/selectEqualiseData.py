@@ -12,6 +12,8 @@ from numpy import genfromtxt
 
 from varNames import *
 
+print("PREPARING TRAIN AND TEST SETS")
+
 # Entire data
 sortedIndicesFileName = "sortedIndices"
 rawDataFileName = "processedActualData"
@@ -57,6 +59,8 @@ rawFilteredQ = []
 rawFilteredQDot = []
 rawFilteredQDDot = []
 
+print("> Filtering the data")
+
 # Filtering (or not) the q, qdot, qddot, tau values 
 for jointIndex in range(totalJoints):
     if toFilterTau:
@@ -92,14 +96,11 @@ sortedRows = genfromtxt(sortedIndicesFileName, delimiter=',').astype(int) # Data
 trainRows = [] # indices of sub-sampled data to be used for training and cross-validation
 testRows = [] # indices of the remainder data
 
-trainRows = sortedRows[0:bestPointCount].tolist() 
-remainingEntries = sortedRows[bestPointCount:]
-random.shuffle(remainingEntries)
-
-trainRows = trainRows + remainingEntries[:randomPointCount].tolist()
-testRows = remainingEntries[randomPointCount:]
+trainRows = sortedRows[0:trainSize].tolist() 
+testRows = sortedRows[trainSize:].tolist()
 
 #Saving the train data
+print("> Segregating to train and test sets")
 trainData = rawData.iloc[trainRows]
 trainTauData_filtered = rawFilteredTau.iloc[trainRows]
 trainJointData_filtered = rawFilteredJointData.iloc[trainRows]
@@ -140,7 +141,7 @@ testJointData = testData.iloc[:, 1:(1+3*totalJoints)] # only [q, qdot, qddot]
 testJointData.to_csv(testJointDataFileName, index=False, header=False)
 
 
-
+print("> Computing distribution into low and high-speed data")
 with open(velocityDistribFileName, 'w+') as velocityDistribFile:
     # Information about the distribution of sub-sampled data
     velocityDistribFile.writelines(
@@ -185,4 +186,4 @@ with open(origVelocityDistribFileName, 'w+') as origvelocityDistribFile:
         origvelocityDistribFile.writelines(
             "high speed point count:" + str(rawhighSpeedDataCount) + "\n")
 
-print("Prepared Train and Test sets")
+print("> Prepared Train and Test sets")

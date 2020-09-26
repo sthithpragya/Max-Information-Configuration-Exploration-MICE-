@@ -26,8 +26,10 @@ sortedIndicesFileName = os.path.join(savePath, sortedIndicesFileName + ".csv")
 qAscendingOrderData = [[[] for i in range(3)] for j in range(totalJoints)] # [qValue, rowIndex, score]
 qDotAscendingOrderData = [[] for i in range(totalJoints)] # [[qDotValues]]
 
+print("SORTING THE PROCESSED DATA")
 
 if equaliser == "select":
+	print("> Score based sub-sampling")
 	if not rarityFactor and not priorityFactor:
 		print("Atleast one of rarityFactor and priorityFactor factors must be true for this subsampling method")
 		sortedRows = []
@@ -121,11 +123,11 @@ if equaliser == "select":
 		sortedRows = goodIndices[inds]
 
 else:
+	print("> No subsampling")
 	sortedRows = list(range(len(rawData.index)))
-	if equaliser == "random":
-		random.shuffle(sortedRows)
+	random.shuffle(sortedRows)
 
-print("Subsampling completed")
+print("> Subsampling completed")
 
 with open(sortedIndicesFileName, "w") as sortedIndicesFile:
 	writer = csv.writer(sortedIndicesFile, lineterminator='\n')

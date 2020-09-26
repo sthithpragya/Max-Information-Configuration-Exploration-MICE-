@@ -28,8 +28,10 @@ DT = os.path.join(savePath, DT + ".csv")
 time = os.path.join(savePath, time + ".csv")
 PAD = os.path.join(savePath, PAD + ".csv")
 PDD = os.path.join(savePath, PDD + ".csv")
-	
+
+print("DATA PROCESSING")	
 ##Opening the recorded datas
+print("> Opening the recorded data")
 AJdata = pandas.read_csv(AJ, names=jointAngleNames + jointVelNames + jointTorqueNames)
 DJdata = pandas.read_csv(DJ, names=jointAngleNames + jointVelNames)
 ATdata = pandas.read_csv(AT, names=taskColNames)
@@ -55,6 +57,7 @@ def divByTime(dataList):
 
 # If the recorded data lacks joint-velocities OR the joint-velocities are unreliable, we compute the velocities from joint angle and time elapsed data (dQ/dT)
 if useArtificialVel:
+	print("> Preparing artifical velocity data")
 	ArtificialVel = "computedActualVelocityData"
 	ArtificialVel = os.path.join(savePath, ArtificialVel + ".csv")
 
@@ -105,6 +108,7 @@ with open(AJacc, "w") as accCsv:
   pass
 
 # Usual processing i.e. when joint velocity data is available
+print("> Preparing accelaration data")
 Jddot = np.concatenate((divByTime(AJdata.iloc[:,0+totalJoints].tolist()), divByTime(AJdata.iloc[:,1+totalJoints].tolist())), axis=1)
 
 if(totalJoints > 2):
@@ -119,6 +123,8 @@ Jddot[Jddot == np.inf] = 0 # replacing inf with 0 for later removal
 np.savetxt(AJacc, Jddot, delimiter=",")
 
 AJaccData = pandas.read_csv(AJacc, names=jointAccNames)
+
+print("> Cleaning the data")
 
 # Removing the NaN rows to downsample the data
 nanRows = AJaccData.T.isnull().any()
@@ -140,7 +146,7 @@ DTdata = DTdata[zeroRows]
 
 
 # The processed data
-
+print("> Saving the processed data")
 # The actual or real robot behaviour
 processedActualData = pandas.concat((timeData[timeName], AJdata[jointAngleNames+jointVelNames], AJaccData[jointAccNames], AJdata[jointTorqueNames]), axis=1)
 processedActualData.to_csv(PAD, index = False, header=True)
@@ -158,6 +164,7 @@ unsortedData = pandas.read_csv(PAD).iloc[:, 1:29]
 rowCount = len(unsortedData)
 blockData = pandas.DataFrame()
 
+print("> Preparing block index data")
 # Segregating the data-entries wrt to the modules of the phase-space grid they lie in 
 for jointIndex in range(totalJoints):
 	info.write("joint: " + str(jointIndex + 1) + "\n") 	# Divisions of phase space along joint angle axis
@@ -224,3 +231,5 @@ for jointIndex in range(totalJoints):
 blockIndicesFileName = "blockIndices"
 blockIndicesFileName = os.path.join(savePath, blockIndicesFileName + ".csv")
 blockData.to_csv(blockIndicesFileName, index=False, header=True)
+
+print("> Data processing complete")

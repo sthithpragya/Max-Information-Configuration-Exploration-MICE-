@@ -16,6 +16,7 @@ from sklearn.datasets import dump_svmlight_file
 
 from varNames import *
 
+print("CONVERTING TRAIN AND TEST SETS TO SPARSE FORMAT")
 
 nonEqualisedDataSet = "processedActualData"
 
@@ -74,10 +75,10 @@ if recordingResultantTorque:
 errorTestData = tauTestData - predTauTestData.values
 
 dataMean = jointTrainData.mean()
-print("Mean of the joint train data")
+print("> Mean of the joint train data")
 print(dataMean)
 dataStd = jointTrainData.std()
-print("Std of the joint train data")
+print("> Std of the joint train data")
 print(dataStd)
 
 np.savetxt(meanFileName, dataMean.values, fmt='%1.3f')
@@ -90,6 +91,7 @@ scaledTrainData = (jointTrainData - dataMean)/dataStd
 scaledTestData = (jointTestData - dataMean)/dataStd
 
 #saves training and testing data in sparse formats for each model
+print("> Saving in sparse format")
 for modelIndex in range(totalJoints):
 
     sparseTrainDataFileName = "sparseTrainData" + str(modelIndex)
@@ -107,6 +109,8 @@ for modelIndex in range(totalJoints):
     sparseErrorTestDataFileName = "sparseErrorTestData" + str(modelIndex)
     sparseErrorTestDataFileName = os.path.join(resultDirectory, sparseErrorTestDataFileName + ".dat")
     dump_svmlight_file(scaledTestData, errorTestData.iloc[:,modelIndex], sparseErrorTestDataFileName, zero_based=False)
+
+print("> Saving in csv format")
 
 normalisedTrainData = np.concatenate((scaledTrainData.to_numpy(),tauTrainData.to_numpy()),axis=1)
 normalisedTestData = np.concatenate((scaledTestData.to_numpy(),tauTestData.to_numpy()),axis=1)
