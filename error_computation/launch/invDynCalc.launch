@@ -1,0 +1,14 @@
+<launch>
+
+	<rosparam file="$(find error_computation)/config/param.yaml" />
+
+    <node pkg="error_computation" type="inverseDynCalc" name="inverseDynCalc_test" output="screen">
+        <param name="testSetPrep" type="bool" value="true" />
+    </node>
+	
+    <node pkg="error_computation" type="inverseDynCalc" name="inverseDynCalc_train" output="screen">
+        <param name="testSetPrep" type="bool" value="false" />
+    </node>
+
+
+</launch>

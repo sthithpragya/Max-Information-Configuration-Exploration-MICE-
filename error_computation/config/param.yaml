@@ -1,0 +1,7 @@
+# GENERAL PARAMETERS=
+# Path where data is recorded
+savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_ID1"
+#------------------------------------------
+
+totalJoints: 7
+
