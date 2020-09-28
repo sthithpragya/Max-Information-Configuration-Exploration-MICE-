@@ -34,8 +34,7 @@ print("Calculating the cross-randomness")
 
 # Calculating the variances
 GMMEntropy = [[] for i in range(iterCount)]
-# for iter in range(iterCount):
-for iter in range(5):
+for iter in range(iterCount):
 	print("Iteration count: ", iter+1, "/", iterCount)
 
 	tempData = jointData[0:(iter+1)*entropyBatchSize,:]
@@ -45,10 +44,11 @@ for iter in range(5):
 
 	tempGMMEntropy = 0
 
-	GMMTemp = mixture.GaussianMixture(n_components=componentCount, covariance_type='full', verbose=2).fit(jointData)
+	GMMTemp = mixture.GaussianMixture(n_components=componentCount, covariance_type='full', verbose=2, max_iter=2).fit(jointData)
 
-	probDist = GMMTemp.predict_proba(jointData)
-	GMMEntropy[iter] = np.dot(probDist,np.log(probDist))
+	logProbs = GMMTemp.score_samples(jointData)
+	GMMEntropy[iter] = [-np.dot(logProbs,np.exp(logProbs))]
+
 
 # Writing the variances to csv
 file = open(GMMEntropyFileName, 'w+', newline ='')   
