@@ -66,7 +66,7 @@ if recordingResultantTorque:
 errorTrainData = tauTrainData - predTauTrainData.values
 jointTestData = testDataSupplemented.iloc[:, 0:3*totalJoints]
 tauTestData = testDataSupplemented.iloc[:, 3*totalJoints:4*totalJoints]
-predTauTestData = testDataSupplemented.iloc[:, 4*totalJoints:5*totalJoints]    
+predTauTestData = testDataSupplemented.iloc[:, 4*totalJoints:5*totalJoints]
 
 if recordingResultantTorque:
     tauTrainData = - tauTrainData
