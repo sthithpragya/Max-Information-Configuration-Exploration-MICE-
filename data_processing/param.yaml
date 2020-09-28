@@ -1,6 +1,6 @@
 ## FILE LOCATIONS
 # savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
-savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
+savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
 #-----------------------------------------------
 
 ## TYPE OF EQUALISATION
@@ -48,7 +48,9 @@ qDotBound: 0.3
 qMargin: 0.0
 qDotMargin: 0.0
 
-eigSpreadBatchSize: 1000
+# Cross Randomness parameters
+entropyBatchSize: 1000
+componentCount: 14
 
 totalJoints: 7
 

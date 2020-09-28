@@ -26,7 +26,7 @@ rawData = np.genfromtxt(rawDataFileName, delimiter=',', dtype=float, skip_header
 jointData = rawData[:,1:1+(2*totalJoints)]
 
 dataSize =  np.shape(jointData)[0]
-iterCount = int(dataSize/eigSpreadBatchSize)
+iterCount = int(dataSize/entropyBatchSize)
 
 print("Calculating the cross-randomness")
 
@@ -63,7 +63,7 @@ with file1:
 for iter in range(iterCount):
 	print("Iteration count: ", iter, "/", iterCount)
 	pointCounterSubCube = [0 for i in range(subCubeSize)] # Keeps a track of number of points in each sub-cube of the main 14 dimensional hypercube
-	hIndices = hyperCubeIndices[0:(iter+1)*eigSpreadBatchSize]
+	hIndices = hyperCubeIndices[0:(iter+1)*entropyBatchSize]
 
 	# Counting the number of entries in each sub-cube
 	c = Counter(hIndices)

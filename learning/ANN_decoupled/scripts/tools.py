@@ -26,7 +26,7 @@ def grid_search_loop(train_data, test_data, device, seeds, nb_folds, eta_grid,
     nb_epochs = 100
     
     # Mini-batch size
-    batch_size = 12000
+    batch_size = 10000
 
     # Compute number of hyperparameters combinations
     nb_combinations = len(eta_grid) * len(nb_hidden_layers_grid) * \

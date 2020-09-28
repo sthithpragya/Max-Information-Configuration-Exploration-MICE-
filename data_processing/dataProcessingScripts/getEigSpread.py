@@ -23,20 +23,20 @@ jointData = rawData[:,1:1+(2*totalJoints)]
 
 eigenValSpread = []
 dataSize =  np.shape(jointData)[0]
-iterCount = int(dataSize/eigSpreadBatchSize)
+iterCount = int(dataSize/entropyBatchSize)
 
 print("Calculating the cross-randomness")
 
 for iter in range(iterCount):
 	print("Iteration count: ", iter, "/", iterCount)
-	tempData = jointData[0:(iter+1)*eigSpreadBatchSize,:]
+	tempData = jointData[0:(iter+1)*entropyBatchSize,:]
 	print(np.shape(tempData))
 	dataMean = np.mean(tempData,axis=0)
 	dataStd = np.std(tempData,axis=0)
 
 	tempData = (tempData - dataMean)/dataStd # normalised data
 
-	covarMatrix = np.dot(np.transpose(tempData), tempData)/((iter+1)*eigSpreadBatchSize)
+	covarMatrix = np.dot(np.transpose(tempData), tempData)/((iter+1)*entropyBatchSize)
 	eigVal, eigvec = np.linalg.eig(covarMatrix)
 
 	eigenValSpread = eigenValSpread + [[np.var(eigVal)]]

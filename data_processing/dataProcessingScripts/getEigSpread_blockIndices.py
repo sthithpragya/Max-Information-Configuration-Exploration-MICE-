@@ -20,7 +20,7 @@ rawDataFileName = os.path.join(savePath, rawDataFileName + ".csv")
 rawData = np.genfromtxt(rawDataFileName, delimiter=',', dtype=int, skip_header=1)
 
 dataSize =  np.shape(rawData)[0]
-iterCount = int(dataSize/eigSpreadBatchSize)
+iterCount = int(dataSize/entropyBatchSize)
 
 gridSize = [[] for i in range(totalJoints)]
 
@@ -52,7 +52,7 @@ for baseIter in range(11):
 
 	for iter in range(iterCount):
 		print("Sequence: ", baseIter+1, "/", 10, "| Iteration count: ", iter+1, "/", iterCount)
-		tempData = jointData[0:(iter+1)*eigSpreadBatchSize,:]
+		tempData = jointData[0:(iter+1)*entropyBatchSize,:]
 		print(np.shape(tempData))
 		
 		# Min-Max scaling
@@ -63,7 +63,7 @@ for baseIter in range(11):
 
 		tempData = (tempData - dataMean) # normalised data
 
-		covarMatrix = np.dot(np.transpose(tempData), tempData)/((iter+1)*eigSpreadBatchSize)
+		covarMatrix = np.dot(np.transpose(tempData), tempData)/((iter+1)*entropyBatchSize)
 		eigVal, eigvec = np.linalg.eig(covarMatrix)
 
 		eigenValSpread = eigenValSpread + [[np.var(eigVal)]]
