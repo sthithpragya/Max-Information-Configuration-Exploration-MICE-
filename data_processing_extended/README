@@ -6,8 +6,11 @@ Quick Visualisation of recorded data
 For usual non or semi parametric learning
 > ./1_prepareData.sh
 > ./2_subSample.sh
-> roslaunch data_collection invDynCalc.launch (from catkin_ws)
+> roslaunch iiwa_data_collection invDynCalc.launch from catkin_ws
 > ./3_processSubSampled.sh
 
 Visualising the processed and sub-sampled data
 > ./4_visualise.sh
+
+For entropy comparison
+> ./5_entropyComparsion.sh

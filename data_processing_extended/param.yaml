@@ -1,11 +1,20 @@
 ## FILE LOCATIONS
-# savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
-savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
+savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
+# savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
+#-----------------------------------------------
+
+## TYPE OF EQUALISATION
+# equaliser: "select" # selecting the best sampleBatchSize * finalBatchCount number of points
+equaliser: "none" # no subsampling
+
+# NOTE: The 'select' method for equalising implements score based subsampling
+# Atleast one of the following factors must be true
+rarityFactor: True
+priorityFactor: True
 #-----------------------------------------------
 
 ## PARAMETERS ASSOCIATED WITH DATA SUB-ASMPLING
-# trainSize: 2000000
-trainSize: 150000
+trainSize: 2000000
 
 # Determine the size of block around a data-point for calculating the point's priority as a part of its relevance score
 qBelt: 0.05
@@ -28,6 +37,7 @@ recordingResultantTorque: True
 # True - The torque-sensor senses the resultant torque (i.e. the applied torque was -(recorded value))
 # False - Otherwise
 
+
 # Inverse of publishing frequency
 dt: 0.005
 
@@ -37,6 +47,10 @@ qBound: 0.3
 qDotBound: 0.3
 qMargin: 0.0
 qDotMargin: 0.0
+
+# Cross Randomness parameters
+entropyBatchSize: 10000
+componentCount: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
 
 totalJoints: 7
 

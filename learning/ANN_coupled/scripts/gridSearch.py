@@ -13,6 +13,7 @@ savePath = paramLoaded["savePath"]
 totalJoints = paramLoaded["totalJoints"]
 learnErrorModel = paramLoaded["learnErrorModel"]
 
+print("Cross-validation for error model: ", learnErrorModel)
 nb_folds = paramLoaded["crossValFoldCount"]
 eta_grid = paramLoaded["etaGrid"]
 nb_hidden_layers_grid = paramLoaded["hiddenLayerGrid"]
@@ -25,8 +26,6 @@ else:
 	trainDataFileName = "normalisedTrainData"
 	testDataFileName = "normalisedTestData"
 
-print("Preparing training and test data")
-
 trainDataFileName = os.path.join(savePath, trainDataFileName + ".csv")
 testDataFileName = os.path.join(savePath, testDataFileName + ".csv")
 
@@ -34,25 +33,22 @@ trainData = np.genfromtxt(trainDataFileName, dtype=float, delimiter=',') # np ar
 testData = np.genfromtxt(testDataFileName, dtype=float, delimiter=',') # np array of 7 columns with each column corresponding to that joint's torque
 
 np.random.shuffle(trainData)
+np.random.shuffle(testData)
 
-train_data = torch.from_numpy(trainData)
-test_data = torch.from_numpy(testData)
+# train_data = torch.from_numpy(trainData)
+# test_data = torch.from_numpy(testData)
 
 if torch.cuda.is_available():
 	device = torch.device('cuda')
 else:
 	device = torch.device('cpu')          
 
-train_data = train_data.float()
-test_data = test_data.float()
-
 debug = False
 
 # List of seed to use for randomization
 seeds = [0]
 
-# Train network
-results = tools.grid_search_loop(train_data, test_data, device, seeds, 
+results = tools.grid_search_loop(trainData, testData, device, seeds, 
 									nb_folds, eta_grid, nb_hidden_layers_grid, 
 									nb_hidden_neurons_grid, debug)
 

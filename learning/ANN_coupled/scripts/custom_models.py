@@ -47,5 +47,7 @@ class InverseDynamicModel(nn.Module):
         
         y = self.fc_out(y)
         
+        # y =self.fc_out(self.fc_hblock(F.relu(self.fc_h1(x))))
+
         return y
 

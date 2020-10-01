@@ -22,7 +22,6 @@ if learnErrorModel:
 else:
 	saveDirName = "torqueModels"
 
-
 modelSaveLocation = os.path.join(learntModelLoc,'nuSVR')
 if not os.path.isdir(modelSaveLocation):
 	os.mkdir(modelSaveLocation)

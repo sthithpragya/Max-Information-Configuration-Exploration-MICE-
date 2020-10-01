@@ -19,6 +19,14 @@ eta = paramLoaded["etaCoupled"]
 nb_hidden_layers = paramLoaded["layersCoupled"]
 nb_hidden_neurons = paramLoaded["neuronsCoupled"]
 
+# List of seed to use for randomization
+s = 0
+f = 0
+seeds = [0]
+nb_epochs = 400
+batch_size = 10000
+nb_folds = 1
+
 if learnErrorModel:
     trainDataFileName = "normalisedErrorTrainData"
     testDataFileName = "normalisedErrorTestData"
@@ -31,6 +39,15 @@ testDataFileName = os.path.join(savePath, testDataFileName + ".csv")
 
 trainData = np.genfromtxt(trainDataFileName, dtype=float, delimiter=',') # np array of 21 columns (q, qdot, qddot)
 testData = np.genfromtxt(testDataFileName, dtype=float, delimiter=',') # np array of 7 columns with each column corresponding to that joint's torque
+
+testDataSize = np.shape(testData)[0]
+testDataSize = int(testDataSize/batch_size)*batch_size
+
+trainDataSize = np.shape(trainData)[0]
+trainDataSize = int(trainDataSize/batch_size)*batch_size
+
+print("Train data size: ", trainDataSize)
+print("Test data size: ", testDataSize)
 
 np.random.shuffle(trainData)
 
@@ -50,21 +67,14 @@ test_data = test_data.to(device)
 
 #-----------------------------
 
-train_input = train_data[:, 0:3*totalJoints]
-train_target = train_data[:, 3*totalJoints:]
+train_input = train_data[:trainDataSize, 0:3*totalJoints]
+train_target = train_data[:trainDataSize, 3*totalJoints:]
 
-test_input = test_data[:, 0:3*totalJoints]
-test_target = test_data[:, 3*totalJoints:]
+test_input = test_data[:testDataSize, 0:3*totalJoints]
+test_target = test_data[:testDataSize, 3*totalJoints:]
                     
 debug = True
 
-# List of seed to use for randomization
-s = 0
-f = 0
-seeds = [0]
-nb_epochs = 400
-batch_size = 10000
-nb_folds = 1
 
 # Train network
 model = custom_models.InverseDynamicModel(nb_hidden_layers, nb_hidden_neurons).to(device)
@@ -73,7 +83,7 @@ print("training the model")
 
 tools.train_model(model, train_input, train_target, nb_epochs, 
             batch_size, eta, s, len(seeds), f, nb_folds, 
-            debug)
+            debug, device)
 
 # Saving
 if learnErrorModel:
@@ -81,8 +91,8 @@ if learnErrorModel:
 else:
     torch.save(model, 'torqueModel.pt')
 
-train_error = tools.compute_loss(model, train_input, train_target)
-test_error = tools.compute_loss(model, test_input, test_target)
+train_error = tools.compute_loss(model, train_input, train_target, batch_size, device)
+test_error = tools.compute_loss(model, test_input, test_target, batch_size, device)
 
 result_train = torch.empty(len(seeds), nb_folds).to(device)
 result_test = torch.empty(len(seeds), nb_folds).to(device)

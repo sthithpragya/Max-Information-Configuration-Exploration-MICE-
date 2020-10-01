@@ -1,11 +1,11 @@
 # BASE PARAMETERS
 
 # Directories
-savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/session18_125k_gravComp"   # location of the 'recorded_data' directory
-learntModelLoc: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/learning/learnt_models"              # location of the 'learnt_models' directory
+savePath: "/home/lasa/sthith/InvDyn_Learning/recorded_data/session_ID1"   # path of data (on which you wish to learn)
+learntModelLoc: "/home/lasa/sthith/InvDyn_Learning/learnt_models"              # where to save the learnt models
 
 # General Parameters
-totalJoints: 7          # DoF of the manipulator
+totalJoints: 7
 learnErrorModel: True   # False <-> Torque Models; True <-> Error Models
 crossValFoldCount: 10   # Folds for cross-validation on the training dataset
 
@@ -25,8 +25,9 @@ nu: 0.1
 gridSearchCList: [0.1, 1, 10, 100, 1000]                  
 gridSearchGammaList: [0.01, 0.1, 1, 10, 100, 1000, 10000] 
 
+
 # Joint-wise best performing combinations of C and Gamma (tuned hyperparameters)
-tunedCList: [100, 100, 100, 100, 10, 100, 0.1] 
+tunedCList: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1] 
 tunedGammaList: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
 
 # Parameters to specify SVM parameters
@@ -39,14 +40,14 @@ nu: 0.1                 # nu for nuSVR
 
 # FOR ANN (PyTorch implementation)
 # Learning rate, Hidden layer count and Neurons per layer values to run gridsearch on
-etaGrid: [0.01, 0.05]                                   
-hiddenLayerGrid: [1, 2, 3, 4, 5]
+etaGrid: [0.01, 0.05]
+hiddenLayerGrid: [1,2,3,4,5]
 hiddenNeuronGrid: [25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
 
 # Tuned values for ANN_coupled
 etaCoupled: 0.01
-layersCoupled: 3
-neuronsCoupled: 250
+layersCoupled: 2
+neuronsCoupled: 500
 
 # Tuned joint-wise values for ANN_decoupled
 etaDecoupled: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
@@ -64,12 +65,12 @@ zeroParamCount: 29      # Due to usage of 'fixed' links, physical parameters of
                         # first 29 parameters don't have any effect.
                         # Set to 0 if not required
 
-# NOTE: Manually enter the physical parameters of the robot (wrt CAD data) in LSR/LSROptimisation.py, line 74 onwards
+# NOTE: Manually enter the physical parameters of the robot (wrt CAD data) 
+#       in LSR/LSROptimisation.py, line 74 onwards
 
-# Exernal bounds placed on physical parameters to make sure they lie within 
-# the selected bound rabge of the original CAD data
-
-# bounded: "absolute"   # Loose absolute bounds on the physical parameters (optimised parameters may not be physically consistent)
-bounded: "50%"          # Optimised parameters = Within 50% of CAD data
-# bounded: "25%"        # Optimised parameters = Within 25% of CAD data
+# Exernal bounds placed on physical parameters' optimisation (wrt original CAD data)
+# bounded: "absolute"
+bounded: "50%"
+# bounded: "25%"
 #-----------------------------------------------
+      

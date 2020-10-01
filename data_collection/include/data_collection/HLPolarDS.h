@@ -57,9 +57,6 @@ class HLPolarDS{
                 double _increm;
                 double _angleDispLimit;
 
-            // Other Strings
-                // std::string _looping;
-
         /** 
          * --------------------------------------
          * USED DURING TRAJECTORY GENERATION
@@ -244,7 +241,6 @@ class HLPolarDS{
                 double randPointCount,
                 double increm,
                 double angleDispLimit);
-                // ,std::string looping);                      
 
             bool init();                                    // Initialize node
             void run();                                     // Run node
