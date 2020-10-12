@@ -1,0 +1,14 @@
+<launch>
+
+	<rosparam file="$(find testing_ID)/config/param.yaml" />
+
+    <node pkg="testing_ID" type="TaskExecution_node" name="TaskExecution_node" output="screen">
+    </node>
+
+    <node pkg="testing_ID" type="performanceRecorder.py" name="performanceRecorder" output="screen">
+    </node>
+
+    <node pkg="testing_ID" type="NNPrediction.py" name="NNPrediction" output="screen">
+    </node>
+
+</launch>

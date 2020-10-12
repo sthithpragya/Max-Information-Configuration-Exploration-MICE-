@@ -1,0 +1,246 @@
+# Filepath to learnt_models
+modelDirectory: "/home/sthithpragya/Study/Thesis/learning/learnt_models"
+# Path for saving the results from static and dynamic execution
+savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recordings/testing_meh" 
+
+meanDataFileName: "trainDataMean.txt"
+stdDataFileName: "trainDataStd.txt"
+
+#------------------------------------------------------------------------
+
+# ROS PARAMETERS
+# > Topic to send command to manipulator
+# > Position controller used during static execution
+# > Torque controller used during dynamic execution
+positionController: "/iiwa/PositionController/command" # type -> std_msgs::Float64MultiArray
+torqueController: "/iiwa/TorqueController/command" # type -> std_msgs::Float64MultiArray
+
+# > Topic to read the robot sensor measurements 
+robotJointState: "/iiwa/joint_states" # type -> sensor_msgs::JointState
+
+# NOTE: If the desired message types for these topics differ, 
+# manually change the message type in the source files (mention location)
+
+pubFreq: 200
+#------------------------------------------------------------------------
+
+# MODEL TESTING
+
+# > Model to test (for predciting the feedforward torques)
+# learningMethod: "ANN"
+learningMethod: "URDF"
+# learningMethod: "nuSVR"
+
+# Method to use for computing the joint torques for cancelling the internally applied gravity compensation torques 
+# gravCompMethod: "ANN"
+gravCompMethod: "URDF"
+# gravCompMethod: "nuSVR"
+
+
+# > Torque vs Error model
+useErrorModel: false # True - Use the Error model, False - Use Torque Model
+
+# > Type of test
+dynamicExecution: false
+#False - Static execution task: Comparing predicted and actual joint torques during stationary poses
+#True - Dynamic execution task: Comparing position and velocity errors during trajectory tracking
+
+DT: 0.005
+
+#------------------------------------------------------------------------
+
+# STATIC TESTING PARAMETERS
+# Acceptable errors during Static execution when reaching the allocated stationary position
+qError: 0.1
+qDotError: 0.05
+qdDotError: 10
+
+#------------------------------------------------------------------------
+
+# DYNAMIC TESTING PARAMETERS
+varFreq: True # To periodically change the frequency of the test sinusoidal trajectory or not
+frequencyPeriod: 5 # Period after which the frequency is changed
+
+# > Forces to use during trajectory tracking
+useFB: true # Feedback (from PD controller)
+useFF: true # Feedforward (from the learnt model)
+gravComp: true # Torques to cancel out the internally applied 'Gravity compensation torques' 
+
+# > Joint-data to be sent to learnt models for feedforward prediction
+posStat: 2
+# 1 - Current joint position
+# 2 - Desired joint position (sinusoid(t))
+# 3 - Approximated (q_t-1 + q_dot*dt)
+
+velStat: 2
+# 0 - Zero
+# 1 - Current
+# 2 - Desired
+
+accStat: 2
+# 0 - Zero
+# 1 - Current
+# 2 - Desired
+# 3 - Approximated (q_dot_t - q_dot_t-1)/dt
+
+kInit: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+phInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+betaInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+thetaInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+#------------------------------------------------------------------------
+
+# ----- to change -----
+#!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# modelExtension: ".dat.model"
+
+# elapsedTimePeriod: 5.0
+# # checkingGravComp: true # if true, set posStat = 1, accStat = 0, velStat = 0
+# checkingGravComp: false # if true, set posStat = 1, accStat = 0, velStat = 0
+# # # gravCompTraj: "startStop"
+# # gravCompTraj: "sinusoid"
+realTimePred: false
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!
+# ----- to change -----
+
+#------------------------------------------------------------------------
+
+# ROBOT PARAMETERS
+totalJoints: 7
+
+qLimLower:
+  - -2.7925 
+  - -2.00
+  - -2.7925
+  - -1.9198
+  - -2.7925
+  - -1.9198
+  - -2.8797
+
+qLimUpper:
+  - 2.7925 
+  - 2.00
+  - 2.7925
+  - 1.9198
+  - 2.7925
+  - 1.9198
+  - 2.8797
+
+qDotLimLower:
+  - -1.4835
+  - -1.4835
+  - -1.7453
+  - -1.3089
+  - -2.2689
+  - -2.3561
+  - -2.3561 
+
+qDotLimUpper:
+  - 1.4835
+  - 1.4835
+  - 1.7453
+  - 1.3089
+  - 2.2689
+  - 2.3561
+  - 2.3561 
+
+qStart: 
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+
+qDotStart:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+
+#------------------------------------------------------------------------
+
+# PD GAINS FOR THE FEEDBACK CONTROLLER
+
+## Low Gains
+# torquePropGain:
+#   - 25.0
+#   - 80.0
+#   - 25.0
+#   - 25.0
+#   - 12.5
+#   - 4.0
+#   - 4.0
+
+# torqueDerGain:
+#   - 12.5
+#   - 40.0
+#   - 12.5
+#   - 12.5
+#   - 6.25
+#   - 2.0
+#   - 2.0
+
+## LowIntermed
+# torquePropGain:
+#   - 27.5
+#   - 90.0
+#   - 32.5
+#   - 32.5
+#   - 13.5
+#   - 3.5
+#   - 3.5
+
+# torqueDerGain:
+#   - 14.0
+#   - 45.0
+#   - 16.0
+#   - 16.0
+#   - 6.25
+#   - 1.75
+#   - 1.75
+
+## Intermed
+torquePropGain:
+  - 31.0
+  - 100.0
+  - 42.0
+  - 42.0
+  - 15.25
+  - 3.0
+  - 3.0
+
+torqueDerGain:
+  - 15.0
+  - 50.0
+  - 21.0
+  - 21.0
+  - 7.5
+  - 1.5
+  - 1.5
+
+## High
+# torquePropGain:
+#   - 37.5
+#   - 120.0
+#   - 60.0
+#   - 60.0
+#   - 19.0
+#   - 2.0
+#   - 2.0
+
+# torqueDerGain:
+#   - 19.0
+#   - 60.0
+#   - 30.0
+#   - 30.0
+#   - 10.00
+#   - 0.8
+#   - 0.8
+#------------------------------------------------------------------------
