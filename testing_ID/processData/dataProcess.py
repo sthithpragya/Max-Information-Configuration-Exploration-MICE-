@@ -23,18 +23,24 @@ AJ = "recordedActualJointData"
 AT = "computedActualTaskData"
 DJ = "recordedDesiredJointData"
 DT = "computedDesiredTaskData"
-FT = "feedTorqueData"
-FB = "fbTorqueData"
-JT = "jointTorqueData"
+
+JT = "predJointTorque"
+
+# FT = "feedTorqueData"
+# FB = "fbTorqueData"
+# JT = "jointTorqueData"
+
 time = "recordedTimeData"
 
 AJ = os.path.join(savePath, AJ + ".csv")
 AT = os.path.join(savePath, AT + ".csv")
 DJ = os.path.join(savePath, DJ + ".csv")
 DT = os.path.join(savePath, DT + ".csv")
-FT = os.path.join(savePath, FT + ".csv")
-FB = os.path.join(savePath, FB + ".csv")
+
+# FT = os.path.join(savePath, FT + ".csv")
+# FB = os.path.join(savePath, FB + ".csv")
 JT = os.path.join(savePath, JT + ".csv")
+
 time = os.path.join(savePath, time + ".csv")
 
 
@@ -42,8 +48,8 @@ AJdata = pandas.read_csv(AJ, header=None, skiprows=1)
 DJdata = pandas.read_csv(DJ, header=None, skiprows=1)
 ATdata = pandas.read_csv(AT, header=None, skiprows=1)
 DTdata = pandas.read_csv(DT, header=None, skiprows=1) 
-FTdata = pandas.read_csv(FT, header=None, skiprows=1) 
-FBdata = pandas.read_csv(FB, header=None, skiprows=1) 
+# FTdata = pandas.read_csv(FT, header=None, skiprows=1) 
+# FBdata = pandas.read_csv(FB, header=None, skiprows=1) 
 JTdata = pandas.read_csv(JT, header=None, skiprows=1) 
 timeData = pandas.read_csv(time) # list of time floats
 
@@ -60,8 +66,8 @@ AJdata.index = range(len(AJdata))
 DJdata.index = range(len(DJdata))
 ATdata.index = range(len(ATdata))
 DTdata.index = range(len(DTdata))
-FTdata.index = range(len(FTdata))
-FBdata.index = range(len(FBdata))
+# FTdata.index = range(len(FTdata))
+# FBdata.index = range(len(FBdata))
 JTdata.index = range(len(JTdata))
 timeData.index = range(len(timeData))
 
@@ -149,22 +155,12 @@ for jointIndex in range(totalJoints):
 
 for jointIndex in range(totalJoints):
     plt.figure(60+jointIndex)
-    plt.plot(timeData.iloc[:,0].tolist(), FBdata.iloc[:,jointIndex].tolist(), label='prop. feedback torque')
+    plt.plot(timeData.iloc[:,0].tolist(), JTdata.iloc[:,totalJoints+jointIndex].tolist(), label='prop. feedback torque')
     plt.xlabel('time')
     plt.ylabel('torque')
     plt.legend()
     fileName = os.path.join(savePath, str(70+jointIndex) + '.png')
     plt.savefig(fileName, bbox_inches='tight')
-
-for jointIndex in range(totalJoints):
-    plt.figure(70+jointIndex)
-    plt.plot(timeData.iloc[:,0].tolist(), FBdata.iloc[:,totalJoints+jointIndex].tolist(), label='der. feedback torque')
-    plt.xlabel('time')
-    plt.ylabel('torque')
-    plt.legend()
-    fileName = os.path.join(savePath, str(60+jointIndex) + '.png')
-    plt.savefig(fileName, bbox_inches='tight')
-
 
 for jointIndex in range(totalJoints):
     plt.figure(80+jointIndex)
@@ -177,13 +173,13 @@ for jointIndex in range(totalJoints):
     plt.savefig(fileName, bbox_inches='tight')
 
 
-for jointIndex in range(totalJoints):
-    plt.figure(100+jointIndex)
-    plt.plot(timeData.iloc[:,0].tolist(), FTdata.iloc[:,2*totalJoints+jointIndex].tolist(), label='int. feedback torque')
-    plt.xlabel('time')
-    plt.ylabel('torque')
-    plt.legend()
-    fileName = os.path.join(savePath, str(70+jointIndex) + '.png')
-    plt.savefig(fileName, bbox_inches='tight')
+# for jointIndex in range(totalJoints):
+#     plt.figure(100+jointIndex)
+#     plt.plot(timeData.iloc[:,0].tolist(), JTdata.iloc[:,2*totalJoints+jointIndex].tolist(), label='int. feedback torque')
+#     plt.xlabel('time')
+#     plt.ylabel('torque')
+#     plt.legend()
+#     fileName = os.path.join(savePath, str(70+jointIndex) + '.png')
+#     plt.savefig(fileName, bbox_inches='tight')
 
-# plt.show()
+plt.show()

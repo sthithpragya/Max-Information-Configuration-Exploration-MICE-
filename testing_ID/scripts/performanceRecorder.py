@@ -106,9 +106,9 @@ def recorder():
     currentJointAcc = currentJointAccInit
     currentJointVel = currentJointVelInit
 
-    timeElapsedDataFileName = "timeElapsedData"
-    actualJointDataFileName = "actualJointData"
-    desiredJointDataFileName = "desiredJointData"
+    timeElapsedDataFileName = "recordedTimeData"
+    actualJointDataFileName = "recordedActualJointData"
+    desiredJointDataFileName = "recordedDesiredJointData"
     predJointTorqueFileName = "predJointTorque"
 
     timeElapsedDataFileName = os.path.join(savePath, timeElapsedDataFileName + ".csv")
