@@ -4,14 +4,14 @@ savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recorded_data/sinsu
 #------------------------------------------
 
 # ROS PARAMETERS
-# Topic to send command to manipulator
+# Topic to send command to manipulator (Position Control Mode)
 publishToRobot: "/iiwa/PositionController/command" # type -> std_msgs::Float64MultiArray
 
 # Topic to read the robot sensor measurements 
 robotJointState: "/iiwa/joint_states" # type -> sensor_msgs::JointState
 
 # NOTE: If the desired message types for these topics differ, 
-# manually change the message type in the source files (mention location)
+# manually change the message type in the source files (HLPolarDS.h and HLPolarDS.cpp)
 
 pubFreq: 200
 #------------------------------------------

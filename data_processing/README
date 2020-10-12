@@ -1,5 +1,6 @@
 > edit param.yaml
-
+> edit dataProcessingScripts/KUKADHfunctions.py in accordance with the DH parameters of the manipulator
+ 
 Quick Visualisation of recorded data
 > ./0_quickViz.sh
 

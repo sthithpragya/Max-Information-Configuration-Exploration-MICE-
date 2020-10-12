@@ -1,15 +1,17 @@
 1) Configure the param.yaml in main 'learning' directory
 
-2) Add the thundersvm package in 'thundersvmPackage' and build.
+2) Make a directory 'thundersvmPackage'
 
-3) Build the target files here:
+3) Add the thundersvm package in 'thundersvmPackage' and build.
+
+4) Build the target files here:
 
 	mkdir build
 	cd build
 	cmake ..
 	make
 
-4) Learning the inverse dynamics:
+5) Learning the inverse dynamics:
 
 	./1_GRID_SEARCH_CV.sh	- Searches the best C and Gamma combinations from C and 
 							  Gamma list 

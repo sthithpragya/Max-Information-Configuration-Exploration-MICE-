@@ -6,9 +6,9 @@ ________________________________________________________________________________
 	Contains 4 sub-packages:
 		1) data_collection
 		2) data_processing
-		2*) data_processing_extended
+		2') data_processing_extended
 		3) learning
-		4) testing_ID
+		4) testing_ID (requires +)
 		5) error_computation (requires *)
 _______________________________________________________________________________________________
 
@@ -26,7 +26,7 @@ ________________________________________________________________________________
 	> Computes joint-accelarations
 	> Subsamples the data and prepared training and test sets
 
-2*) data_processing_extended:
+2') data_processing_extended:
 	> Same functionality as data_processing
 	> Also implements the relevance score-based subsampling strategy
 	> Also has provision to fit GMM to data and compute the sequential batch-wise entropies
@@ -64,9 +64,10 @@ ________________________________________________________________________________
 	> SpaceVecAlg
 	> ROS Control *
 	> RBDyn *
-	> mc_rbdyn_urdf *
+	> mc_rbdyn_urdf * +
 	> corrade *
 	> robot_controllers *
+	> iiwa_tools +
 	
 _______________________________________________________________________________________________
 
@@ -75,6 +76,6 @@ ________________________________________________________________________________
 
 	> Make a directory 'recorded_data' to store the recorded and processed data for learning
 	> Make a directory 'learnt_models' to store the learnt models of inverse dynamics
-	> Place the 'data_collection' and 'testing_id' packages inside the catkin workspace
+	> Place the 'data_collection', 'error_computation' and 'testing_ID' packages inside the catkin workspace
 
 The package specific information is available as README files in the respective packages.

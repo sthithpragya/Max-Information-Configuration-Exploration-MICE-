@@ -96,8 +96,9 @@ sortedRows = genfromtxt(sortedIndicesFileName, delimiter=',').astype(int) # Data
 trainRows = [] # indices of sub-sampled data to be used for training and cross-validation
 testRows = [] # indices of the remainder data
 
+
 trainRows = sortedRows[0:trainSize].tolist() 
-testRows = sortedRows[trainSize:].tolist()
+testRows = sortedRows[trainSize:trainSize+testSize].tolist()
 
 #Saving the train data
 print("> Segregating to train and test sets")

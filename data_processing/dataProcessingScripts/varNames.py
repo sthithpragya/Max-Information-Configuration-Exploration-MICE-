@@ -10,6 +10,8 @@ with open(r'param.yaml') as stream:
 savePath = paramLoaded["savePath"]
 
 trainSize = paramLoaded["trainSize"]
+testSize = paramLoaded["testSize"]
+
 recordingResultantTorque = paramLoaded["recordingResultantTorque"]
 
 useArtificialVel = paramLoaded["useArtVel"]
@@ -25,9 +27,6 @@ qBound = paramLoaded["qBound"]
 qDotBound = paramLoaded["qDotBound"]
 qMargin = paramLoaded["qMargin"]
 qDotMargin = paramLoaded["qDotMargin"]
-
-qBelt = paramLoaded["qBelt"]
-qDotBelt = paramLoaded["qDotBelt"]
 
 toFilterQ = paramLoaded["toFilterQ"] 
 toFilterQDot = paramLoaded["toFilterQDot"] 

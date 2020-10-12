@@ -1,15 +1,10 @@
 ## FILE LOCATIONS
-# savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/session_ID1" # location of whichever data that is to be processed
-savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/sinusoid_data_long" # location of whichever data that is to be processed
+savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_Mini" # location of whichever data that is to be processed
 #-----------------------------------------------
 
 ## PARAMETERS ASSOCIATED WITH DATA SUB-ASMPLING
-# trainSize: 2000000
 trainSize: 150000
-
-# Determine the size of block around a data-point for calculating the point's priority as a part of its relevance score
-qBelt: 0.05
-qDotBelt: 0.05
+testSize: 250000
 
 # Filtering the recorded data
 toFilterQ: False
@@ -21,25 +16,26 @@ qFilterVal: 41
 qDotFilterVal: 41
 tauFilterVal: 41
 
-# For usual learning purposes: 
-  # All filtering - OFF
-
 recordingResultantTorque: True 
 # True - The torque-sensor senses the resultant torque (i.e. the applied torque was -(recorded value))
 # False - Otherwise
 
-# Inverse of publishing frequency
-dt: 0.005
+dt: 0.005 # Inverse of publishing frequency
 
 useArtVel: False # set to True incase the robot (or simulator) is giving incorrect or no joint velocities. NOTE: These velocities are not filtered initially.
 
+# For making the grid in each joint's phase space
 qBound: 0.3
 qDotBound: 0.3
-qMargin: 0.0
-qDotMargin: 0.0
 
+#-----------------------------------------------
+
+## PARAMETERS ASSOCIATED WITH ROBOT
+
+# joint count
 totalJoints: 7
 
+# Joint angle limits
 qLimUpper:
   - 2.7925 
   - 1.2217
@@ -58,6 +54,7 @@ qLimLower:
   - -1.9198
   - -2.8797
 
+# Joint velocity limits
 qDotLimUpper:
   - 1.4835
   - 1.4835
@@ -75,3 +72,7 @@ qDotLimLower:
   - -2.2689
   - -2.3561
   - -2.3561
+
+# Safety margins to be placed near the joint's positon and velocity limits
+qMargin: 0.0
+qDotMargin: 0.0
