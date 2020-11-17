@@ -21,10 +21,8 @@
 #include <RBDyn/FD.h>
 #include <RBDyn/ID.h>
 #include "Eigen/Dense"
-
 #include <iiwa_tools/iiwa_tools.h>
 #include <iiwa_tools/GetGravity.h>
-
 #include <stdio.h> 
 #include <stdlib.h> 
 
@@ -57,6 +55,7 @@ class TaskExecution{
                 bool _realTimePred;
 
                 bool _varFreq;
+                bool _testNow;
 
             // Vectors
                 std::vector<double> _qStart;
@@ -74,6 +73,7 @@ class TaskExecution{
                 std::vector<double> _torquePropGain;    // Kp
                 std::vector<double> _torqueDerGain;     // Kd
 
+                std::vector<std::vector<double>> _randPoses; // _totalJoints x 200 dimensional vector containing joint angles for stationary poses 
 
             // Strings
                 std::string _learningMethod;
@@ -243,7 +243,8 @@ class TaskExecution{
                 std::string modelDirectory,
                 std::string meanDataFileName,
                 std::string stdDataFileName,
-                std::string urdf_string);
+                std::string urdf_string,
+                bool _testNow);
 
 
         bool init();                                    // Initialize node
@@ -268,6 +269,8 @@ class TaskExecution{
         void updateCommandPos();
         void info();
         void mainLoop();                                // Main loop responsible for starting the testing
+
+        void generateRandPoses();                       // Generates a collection of random poses that can be used during static execution
 
 
 

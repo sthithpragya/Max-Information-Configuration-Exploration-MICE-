@@ -60,7 +60,7 @@ for i in range(totalJoints):
 	    os.rename(old,new)
 	else:
 	    old = os.path.join(os.getcwd(), 'sparseTrainData'+ str(i) + '.dat.model')
-	    new = os.path.join(os.getcwd(), 'tau'+ str(i) + '.dat.model')
+	    new = os.path.join(os.getcwd(), 'torque'+ str(i) + '.dat.model')
 	    os.rename(old,new)
 
 	shutil.copy(new, saveDirName)

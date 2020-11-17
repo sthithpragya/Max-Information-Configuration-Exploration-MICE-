@@ -147,6 +147,8 @@ def grid_search_loop(train_data, test_data, device, seeds, nb_folds, eta_grid,
 			results_grid[count, 7] = result_test.mean()
 			results_grid[count, 8] = result_test.std()
 			results_grid[count, 9] = total_nb_parameters
+
+			print(results_grid[count,:])
 			
 			count += 1
 			print('Combinations tested: {:d}/{:d}' \

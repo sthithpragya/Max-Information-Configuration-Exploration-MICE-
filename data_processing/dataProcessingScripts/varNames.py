@@ -37,6 +37,9 @@ qDotFilterVal = paramLoaded["qDotFilterVal"]
 tauFilterVal = paramLoaded["tauFilterVal"] 
 dt = paramLoaded["dt"]
 
+useForTesting = paramLoaded["useForTesting"]
+testMode = paramLoaded["testMode"]
+
 jointAngleNames = [[] for i in range(totalJoints)]
 jointVelNames = [[] for i in range(totalJoints)]
 jointTorqueNames = [[] for i in range(totalJoints)]

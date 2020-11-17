@@ -52,12 +52,12 @@ int main()
         double currentGamma = gammaList[modelIndex];
         double currentC = CList[modelIndex];
 
-        char trainCommand_init[75];
+        char trainCommand_init[80];
         sprintf (trainCommand_init, "export OMP_NUM_THREADS=8");
         system(trainCommand_init);
 
- 		char trainCommand[75];
-        sprintf (trainCommand, "./thundersvmPackage/build/bin/thundersvm-train -s %s -t %s -g %s -c %s -e %s -n %s %s", to_string(process).c_str(), to_string(kernel).c_str(), to_string(currentGamma).c_str(), to_string(currentC).c_str(), to_string(error).c_str(), to_string(nu).c_str(), currenTrainDataFile.c_str());   
+ 		char trainCommand[80];
+        sprintf (trainCommand, "./thundersvmPackage/build/bin/thundersvm-train -s %s -t %s -g %s -c %s -e %s -n %s -m %s %s", to_string(process).c_str(), to_string(kernel).c_str(), to_string(currentGamma).c_str(), to_string(currentC).c_str(), to_string(error).c_str(), to_string(nu).c_str(), to_string(5500).c_str(), currenTrainDataFile.c_str());   
         system(trainCommand);
     }
 }

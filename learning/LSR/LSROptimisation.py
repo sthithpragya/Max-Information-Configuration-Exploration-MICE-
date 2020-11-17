@@ -36,6 +36,8 @@ initPredTauFileName = os.path.join(savePath, initPredTauFileName + ".csv")
 optimPredTauFileName = os.path.join(savePath, optimPredTauFileName + ".csv")
 filteredTauFileName = os.path.join(savePath, filteredTauFileName + ".csv")
 
+print("Reading Data")
+
 regressorYData = pandas.read_csv(regressorYFileName, header=None)
 regressorYData = regressorYData.iloc[:,zeroParamCount:]
 

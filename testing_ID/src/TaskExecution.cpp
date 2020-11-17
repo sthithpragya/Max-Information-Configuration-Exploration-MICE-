@@ -1,6 +1,8 @@
 #include <testing_ID/TaskExecution.h>
 #include <testing_ID/tauPrediction_SVR.hpp>
 #include <testing_ID/helperFunctions.hpp>
+#include <ctime>
+#include <bits/stdc++.h> 
 
 TaskExecution::TaskExecution(ros::NodeHandle &n,                   // Constructor
     int totalJoints,
@@ -40,7 +42,8 @@ TaskExecution::TaskExecution(ros::NodeHandle &n,                   // Constructo
     std::string modelDirectory,
     std::string meanDataFileName,
     std::string stdDataFileName,
-    std::string urdf_string):
+    std::string urdf_string,
+    bool testNow):
 
 
     _loopRate(pubFreq),
@@ -94,6 +97,8 @@ TaskExecution::TaskExecution(ros::NodeHandle &n,                   // Constructo
         _targetArrivalTime = 0.0;
         _targetPoints = 0;
 
+        _testNow = testNow;
+
         // Getting mean and std of the train data set
         _meanData.clear();
         std::fstream meanDataTxt(modelDirectory+"/"+meanDataFileName);
@@ -118,9 +123,9 @@ TaskExecution::TaskExecution(ros::NodeHandle &n,                   // Constructo
         }
 
         // Initialisation of other variables
-        _tauPredDataNormalised = std::vector<double> (totalJoints, 0.0);
-        _tauPredData = std::vector<double> (totalJoints, 0.0);
-        _gravCompPredData = std::vector<double> (totalJoints, 0.0);
+        _tauPredDataNormalised = std::vector<double> (3*totalJoints, 0.0);
+        _tauPredData = std::vector<double> (3*totalJoints, 0.0);
+        _gravCompPredData = std::vector<double> (3*totalJoints, 0.0);
         _URDFgravCompTau = std::vector<double> (totalJoints, 0.0);
         _FFtau = std::vector<double> (totalJoints, 0.0);
         _currentJointEff = std::vector<double> (totalJoints, 0.0);
@@ -146,13 +151,58 @@ TaskExecution::TaskExecution(ros::NodeHandle &n,                   // Constructo
             }
         }
 
+        // Prepare random poses
+        if(!dynamicExecution){
+            // _randPoses = std::vector<std::vector<double>> (totalJoints, std::vector<double> (200,0.0));
+            _randPoses = std::vector<std::vector<double>> (totalJoints, std::vector<double> (200,0.0));
+
+            for(int jointIndex = 0; jointIndex < totalJoints; jointIndex++){
+
+                // std::vector<double> jointAngles(200, 0.0);
+                std::vector<double> jointAngles(200, 0.0);
+
+                double upperLimit = qLimUpper[jointIndex];
+                double lowerLimit = qLimLower[jointIndex];
+                double upperZoneLimit = upperLimit - 0.5; // ~ 30degrees 
+                double lowerZoneLimit = lowerLimit + 0.5; // ~ 30degrees 
+
+                // Zone 1 "Extreme zone"    : [lowerLimit, lowerZoneLimit] U [upperZoneLimit, upperLimit] 
+                // Zone 2 "Normal zone"     : (upperZoneLimit, lowerZoneLimit)
+                // 100 poses each
+
+                // for(int angleIndex = 0; angleIndex < 100; angleIndex++){
+                //     jointAngles[angleIndex] = lowerZoneLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(upperZoneLimit-lowerZoneLimit)));
+
+                //     if(angleIndex < 50){
+                //         jointAngles[angleIndex+100] = lowerLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(lowerZoneLimit-lowerLimit)));
+                //     }
+                //     else{
+                //         jointAngles[angleIndex+100] = upperZoneLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(upperLimit-upperZoneLimit)));
+                //     }
+                // }
+
+                for(int angleIndex = 0; angleIndex < 200; angleIndex++){
+                    jointAngles[angleIndex] = lowerZoneLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(upperZoneLimit-lowerZoneLimit)));
+
+                    // if(angleIndex < 50){
+                    //     jointAngles[angleIndex] = lowerLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(lowerZoneLimit-lowerLimit)));
+                    // }
+                    // else{
+                    //     jointAngles[angleIndex] = upperZoneLimit + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(upperLimit-upperZoneLimit)));
+                    // }
+                }
+                std::random_shuffle(jointAngles.begin(), jointAngles.end()); 
+                _randPoses[jointIndex] = jointAngles;
+            }
+        }
+
         // Loading SVR models
         std::string modelName;
         if(useErrorModel){
             modelName = "error";
         }
         else{
-            modelName = "tau";
+            modelName = "torque";
         }
         for(int modelIndex = 0; modelIndex < totalJoints; modelIndex++){
             
@@ -198,6 +248,7 @@ bool TaskExecution::init(){
 void TaskExecution::run(){
     _tNow = ros::Time::now();
     _tInit = ros::Time::now();
+    std::srand(2);
 
     while(ros::ok()){
         mainLoop();
@@ -208,10 +259,12 @@ void TaskExecution::run(){
 
 
 void TaskExecution::updateNNPredTorque(sensor_msgs::JointState msgData){
-    if(_learningMethod == "ANN"){
-        _FFtauNN = msgData.position;
-        if(_gravCompMethod == "ANN"){
-            _FFGravCompTauNN = msgData.velocity;
+    if(_testNow){
+        if(_learningMethod == "ANN"){
+            _FFtauNN = msgData.position;
+            if(_gravCompMethod == "ANN"){
+                _FFGravCompTauNN = msgData.velocity;
+            }
         }
     }
 }
@@ -256,10 +309,9 @@ void TaskExecution::predictURDFGravComp(){
 }
 
 void TaskExecution::preparePredictionData(){
-    
     // Preparing the desired joint state
     
-    // During dynamic execution, use the sinusoid to be trackes
+    // During dynamic execution, use the sinusoid to be tracked
     if(_dynamicExecution){
 
         // If using variable frequency for sinusoid to be tracked
@@ -302,17 +354,27 @@ void TaskExecution::preparePredictionData(){
         sinusoidVel(_timeElapsed.data, _k, _ph, _totalJoints, _qLimLower, _qLimUpper, _qDotLimLower, _qDotLimUpper),
         sinusoidAcc(_timeElapsed.data, _k, _ph, _totalJoints, _qLimLower, _qLimUpper));
     }
-    // During static execution, go to random stationary poses
+    // During static execution, go to 200 stationary poses
+    // 100 poses around joint-limits
+    // 100 poses in the remaining
     else{
+
         if(inrange(_currentRobotState.jointPos, _desiredRobotState.jointPos, _qError)){
             if(inrange(_currentRobotState.jointVel, _desiredRobotState.jointVel, _qDotError) && inrange(_currentRobotState.jointAcc, _desiredRobotState.jointAcc, _qdDotError)){
                 _targetArrivalTime += _dT;
-                if(_targetArrivalTime >= 0.1){
+                if(_targetArrivalTime >= 1.0){
                     for(int jointIndex = 0; jointIndex < _totalJoints; jointIndex++){
-                        float newQ = _qLimLower[jointIndex] + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(_qLimUpper[jointIndex]-_qLimLower[jointIndex])));
-                        _desiredRobotState.jointPos[jointIndex] = newQ;
-                        _desiredRobotState.jointVel[jointIndex] = 0.0;
-                        _desiredRobotState.jointAcc[jointIndex] = 0.0;
+                        if(_randPoses[jointIndex].size() >= 1){
+                            _desiredRobotState.jointPos[jointIndex] = _randPoses[jointIndex].back();
+                            _desiredRobotState.jointVel[jointIndex] = 0.0;
+                            _desiredRobotState.jointAcc[jointIndex] = 0.0;
+                            _randPoses[jointIndex].pop_back();
+                        }
+                        else{
+                            _desiredRobotState.jointPos[jointIndex] = 0.0;
+                            _desiredRobotState.jointVel[jointIndex] = 0.0;
+                            _desiredRobotState.jointAcc[jointIndex] = 0.0;
+                        }
                     }
                     _targetPoints += 1;
                     _targetArrivalTime = 0.0;
@@ -322,7 +384,6 @@ void TaskExecution::preparePredictionData(){
     }
     
     // Getting the feedback gains
-
     for (int jointIndex = 0; jointIndex<_totalJoints; jointIndex++){
 
 
@@ -390,31 +451,37 @@ void TaskExecution::preparePredictionData(){
         }
 
 
+
         // Data to predict the feedforward torque (posData, velData, accData)
         _tauPredData[jointIndex] = posData;
         _tauPredData[jointIndex+_totalJoints] = velData;       
         _tauPredData[jointIndex+2*_totalJoints] =  accData;
+
         
         // Data to predict the feedforward torque (posData, velData, accData) (normalised)
         _tauPredDataNormalised[jointIndex] = (posData - _meanData[jointIndex])/_stdData[jointIndex];
         _tauPredDataNormalised[jointIndex+_totalJoints] = (velData - _meanData[jointIndex+_totalJoints])/_stdData[jointIndex+_totalJoints];       
         _tauPredDataNormalised[jointIndex+2*_totalJoints] =  (accData - _meanData[jointIndex+2*_totalJoints])/_stdData[jointIndex+2*_totalJoints];
 
+
         // Data to predict the gravity compensation torque (currentJointPos, 0 vel, 0 acc) - May not necessarily be used
         _gravCompPredData[jointIndex] = (_currentRobotState.jointPos[jointIndex] - _meanData[jointIndex])/_stdData[jointIndex];
         _gravCompPredData[jointIndex+_totalJoints] = (0.0 - _meanData[jointIndex+_totalJoints])/_stdData[jointIndex+_totalJoints];       
         _gravCompPredData[jointIndex+2*_totalJoints] =  (0.0 - _meanData[jointIndex+2*_totalJoints])/_stdData[jointIndex+2*_totalJoints];
+
     }
 
     // Send data to NN node if using NN based predictions
-    if(_learningMethod == "ANN"){
-        _nnData.position = _tauPredDataNormalised;
+    if(_testNow){
+        if(_learningMethod == "ANN"){
 
-        if(_gravCompMethod == "ANN"){
-            _nnData.velocity = _gravCompPredData;
+            _nnData.position = _tauPredDataNormalised;
+
+            if(_gravCompMethod == "ANN"){
+                _nnData.velocity = _gravCompPredData;
+            }
+            _nnDataPub.publish(_nnData);
         }
-
-        _nnDataPub.publish(_nnData);
     }
 }
 
@@ -459,10 +526,12 @@ void TaskExecution::getFFtau(rbd::InverseDynamics invDyn){
             if(_useErrorModel){ // supplement the URDF computed feedforward torques with model predicted errors
 
                 if(_learningMethod == "nuSVR"){
-                    _FFtau[i] = _FFtau[i] + predictedTau(_tauPredDataNormalised, _trainedModels[i]);
+                    // _FFtau[i] = _FFtau[i] + predictedTau(_tauPredDataNormalised, _trainedModels[i]);
+                    _FFtau[i] = -_FFtau[i] + predictedTau(_tauPredDataNormalised, _trainedModels[i]); // changed on 13.10 because of the way error is computed
                 }
                 else if(_learningMethod == "ANN"){
-                    _FFtau[i] = _FFtau[i] + _FFtauNN[i];
+                    // _FFtau[i] = _FFtau[i] + _FFtauNN[i]; // changed on 13.10
+                    _FFtau[i] = -_FFtau[i] + _FFtauNN[i];
                 }
             }
             // Using the full model
@@ -490,7 +559,7 @@ void TaskExecution::getGravCompTau(rbd::InverseDynamics invDyn){
         for (size_t i = 0; i < _rbd_indices.size(); i++) {
             size_t rbd_index = _rbd_indices[i]; // working joint index
 
-            rbdyn_urdf.mbc.q[rbd_index][0] = _tauPredData[jIndex];
+            rbdyn_urdf.mbc.q[rbd_index][0] = _currentRobotState.jointPos[jIndex];
             rbdyn_urdf.mbc.alpha[rbd_index][0] = 0.0;
             rbdyn_urdf.mbc.alphaD[rbd_index][0] = 0.0;
             jIndex = jIndex + 1;
@@ -514,10 +583,12 @@ void TaskExecution::getGravCompTau(rbd::InverseDynamics invDyn){
             // Using the Error model
             if(_useErrorModel){ // supplement the URDF computed feedforward torques with model predicted errors
                 if(_gravCompMethod == "nuSVR"){
-                    _gravCompTau[i] = _gravCompTau[i] + predictedTau(_gravCompPredData, _trainedModels[i]);
+                    // _gravCompTau[i] = _gravCompTau[i] + predictedTau(_gravCompPredData, _trainedModels[i]);
+                    _gravCompTau[i] = -_gravCompTau[i] + predictedTau(_gravCompPredData, _trainedModels[i]); // changed on 13.10
                 }
                 else if(_learningMethod == "ANN"){
-                    _gravCompTau[i] = _gravCompTau[i] + _FFGravCompTauNN[i];
+                    // _gravCompTau[i] = _gravCompTau[i] + _FFGravCompTauNN[i]; // changed on 13.10 because of the way error is computed
+                    _gravCompTau[i] = -_gravCompTau[i] + _FFGravCompTauNN[i];
                 }
             }
             // Using the full model
@@ -542,7 +613,8 @@ void TaskExecution::updateTimeElapsed(){
     }
     
     _timeElapsed.data = _tNow.toSec() - _tInit.toSec();
-    std::cout<<"Time elapsed:   "<<_timeElapsed.data<<std::endl;
+    std::cout<<"Time elapsed:   "<<_timeElapsed.data<<" | Targets completed: "<<_targetPoints<<std::endl;
+
 }
 
 void TaskExecution::updateDataToRecord(){
@@ -562,7 +634,7 @@ void TaskExecution::updateCommandTorque(){
             _computedTau[jointIndex] += _FFtau[jointIndex];
         }
         if(_gravComp){
-            _computedTau[jointIndex] += _gravCompTau[jointIndex];
+            _computedTau[jointIndex] += -_gravCompTau[jointIndex];
         }
     }
 
@@ -596,19 +668,26 @@ void TaskExecution::publishData(){
     updateDataToRecord();
     _pubTauRec.publish(_tauRec);
 
-    updateCommandTorque();
+    if(_testNow){
+        updateCommandTorque();
+    }
+
     updateCommandPos();
 
     // Publish positions to recording node
     _pubDesPosRec.publish(_posRec);
 
-    // During dynamic execution, publish the command torques
-    if(_dynamicExecution){
-        _pubTau.publish(_tauCommand);
+    if(_testNow){
+        // During dynamic execution, publish the command torques
+        if(_dynamicExecution){
+            _pubTau.publish(_tauCommand);
+        }
+        // During static execution, publish the command position
+        else{        
+            _pubDesPos.publish(_posCommand);
+        }
     }
-    // During static execution, publish the command position
-    
-    else{        
+    else{
         _pubDesPos.publish(_posCommand);
     }
 }
@@ -645,11 +724,18 @@ void TaskExecution::info(){
 void TaskExecution::mainLoop(){
 
     rbd::InverseDynamics _invDyn(rbdyn_urdf.mb);
+
     preparePredictionData();
     predictURDFGravComp();
-    getFBtau();
-    getFFtau(_invDyn);
-    getGravCompTau(_invDyn);
+
+    if(_testNow){
+        getFBtau();
+        getFFtau(_invDyn);
+        getGravCompTau(_invDyn);        
+    }
     publishData();
-    info();
+    
+    if(_testNow){
+        info();
+    }
 }

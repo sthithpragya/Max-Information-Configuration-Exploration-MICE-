@@ -1,10 +1,11 @@
 ## FILE LOCATIONS
-savePath: "/home/sthithpragya/Study/Thesis/InvDyn_Learning/recorded_data/session_Mini" # location of whichever data that is to be processed
+savePath: "/home/lasa/sthith/InvDyn_Learning/recorded_data/results_dynamic" # location of whichever data that is to be processed
+
 #-----------------------------------------------
 
 ## PARAMETERS ASSOCIATED WITH DATA SUB-ASMPLING
-trainSize: 150000
-testSize: 250000
+trainSize: 0
+testSize: 40000
 
 # Filtering the recorded data
 toFilterQ: False
@@ -28,7 +29,17 @@ useArtVel: False # set to True incase the robot (or simulator) is giving incorre
 qBound: 0.3
 qDotBound: 0.3
 
+useForTesting: True # Whether to normalise data or not
+# For learning purposes, False
+# For testing with some other learned model, True
+# When True:
+#           > does not normalise the data
+#           > does not prepare train sets
+#           > Does not prepare sparse data sets for nuSVR
+#           > Only prepares non-normalised test sets
 #-----------------------------------------------
+# testMode: "static" ## Relevant iff useForTesting is True
+testMode: "dynamic"
 
 ## PARAMETERS ASSOCIATED WITH ROBOT
 

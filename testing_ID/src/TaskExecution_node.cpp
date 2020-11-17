@@ -21,6 +21,7 @@ int main (int argc, char** argv){
     bool dynamicExecution;
     bool realTimePred;
     bool varFreq;
+    bool testNow;
     std::string gravCompMethod;
     std::vector<double> qStart;
     std::vector<double> qDotStart;
@@ -30,7 +31,7 @@ int main (int argc, char** argv){
     std::vector<double> qDotLimLower;
     std::vector<double> betaInit;
     std::vector<double> thetaInit;
-    std::vector<double> kInit;
+    std::vector<double> kkInit;
     std::vector<double> phInit;
     std::vector<double> torquePropGain;
     std::vector<double> torqueDerGain;
@@ -71,7 +72,7 @@ int main (int argc, char** argv){
     n.getParam("/qDotLimLower", qDotLimLower);
     n.getParam("/betaInit", betaInit);
     n.getParam("/thetaInit", thetaInit);
-    n.getParam("/kInit", kInit);
+    n.getParam("/kInit", kkInit);
     n.getParam("/phInit", phInit);
     n.getParam("/pubFreq", pubFreq);
     n.getParam("/torquePropGain", torquePropGain);
@@ -83,6 +84,8 @@ int main (int argc, char** argv){
     n.getParam("/modelDirectory", modelDirectory);
     n.getParam("/meanDataFileName", meanDataFileName);
     n.getParam("/stdDataFileName", stdDataFileName);
+    n.getParam("/testNow", testNow);
+
 
     if (!n.searchParam(robot_description, full_param)) {
         ROS_ERROR("Could not find parameter %s on parameter server", robot_description.c_str());
@@ -103,9 +106,9 @@ int main (int argc, char** argv){
     frequencyPeriod,qError,qDotError,qdDotError,DT,pubFreq,
     useFB,useFF,gravComp,useErrorModel,dynamicExecution,realTimePred,varFreq,
     gravCompMethod,qStart,qDotStart,qLimUpper,qLimLower,qDotLimUpper,qDotLimLower,
-    betaInit,thetaInit,kInit,phInit,torquePropGain,torqueDerGain,
+    betaInit,thetaInit,kkInit,phInit,torquePropGain,torqueDerGain,
     learningMethod,robotJointState,positionController,torqueController,
-    modelDirectory,meanDataFileName,stdDataFileName,urdf_string);
+    modelDirectory,meanDataFileName,stdDataFileName,urdf_string,testNow);
 
     if (!testingID.init()){
         return -1;

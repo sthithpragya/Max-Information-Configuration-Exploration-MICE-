@@ -11,3 +11,6 @@
 
 	3_SAVE				- Renames and saves the models and relevant files to the learnt
 						models directory
+
+
+	4_TEST 				- Used to test any of the learnt models (from the learnt model directory) on any dataset (from the save path directory)

@@ -19,14 +19,15 @@ from std_msgs.msg import Float64
 from std_msgs.msg import String
 import numpy as np
 
-# import torch
-# import torch.nn.functional as F
+import torch
+import torch.nn.functional as F
 
 import time
 
 predTau = JointState() 
 FFTauPrediction = False
 gravCompTauPrediction = False
+coupled = False
 
 def makePrediction(predData):
 	global predTau
@@ -46,6 +47,33 @@ def makePrediction(predData):
 
 	# print("Prediction time: ", t1-t0)
 
+def makePrediction_split(predData): # When using 7 individual NNs with uni-dimensional output [Tau_i]
+	global predTau
+
+	ffData = predData.position
+	gravCompData = predData.velocity
+
+	# t0 = time.clock()
+
+	if FFTauPrediction:
+		feedPrediction = []
+		for i in range(totalJoints):
+			tempModel = modelList[i]
+			feedPrediction = feedPrediction + [tempModel(torch.FloatTensor(ffData)).squeeze()]
+			predTau.position = feedPrediction
+			
+	
+	if gravCompTauPrediction:
+		gravTauPrediction = []
+		for i in range(totalJoints):
+			tempModel = modelList[i]
+			gravTauPrediction = gravTauPrediction + [tempModel(torch.FloatTensor(gravCompData)).squeeze()]
+			predTau.velocity = gravTauPrediction
+
+	# t1 = time.clock()
+	
+	# print("Prediction time: ", t1-t0)
+
 
 if __name__=="__main__":
 
@@ -54,25 +82,73 @@ if __name__=="__main__":
 	modelDirectory = rospy.get_param("/modelDirectory")
 	learningMethod = rospy.get_param("/learningMethod")
 	pubFreq = rospy.get_param("/pubFreq")
-	gravComp = rospy.get_param("/gravComp")
+	gravCompMethod = rospy.get_param("/gravCompMethod")
+	ANN_Coupled = rospy.get_param("/ANN_Coupled")
+	totalJoints = rospy.get_param("/totalJoints")
 
-	if gravComp == "ANN":
+	if gravCompMethod == "ANN":
 		gravCompTauPrediction = True
+		if ANN_Coupled == True:
+			coupled = True
+			if useErrorModel:
+				modelName = "error.pt"
+			else:
+				modelName = "torque.pt"
+			modelName = os.path.join(modelDirectory,modelName)
+			model = torch.load(modelName, map_location='cpu') # since models were trained on GPU, but are being used on CPU
+
+		else:
+			coupled = False
+			modelList = []
+
+			for jointIndex in range(totalJoints):
+				if useErrorModel:
+					modelName = "error" + str(jointIndex) + ".pt"
+				else:
+					modelName = "torque" + str(jointIndex) + ".pt"
+
+				modelName = os.path.join(modelDirectory,modelName)
+				model = torch.load(modelName, map_location='cpu') # since models were trained on GPU, but are being used on CPU
+				modelList = modelList + [model]
+
+
+
 
 	if learningMethod == "ANN":
 		FFTauPrediction = True
-		if useErrorModel:
-			modelName = "error.pt"
-		else:
-			modelName = "tau.pt"
+		if ANN_Coupled == True:
+			coupled = True
+			if useErrorModel:
+				modelName = "error.pt"
+			else:
+				modelName = "torque.pt"
+					# Load the NN model
+			modelName = os.path.join(modelDirectory,modelName)
+			model = torch.load(modelName, map_location='cpu') # since models were trained on GPU, but are being used on CPU
 
-		# Load the NN model
-		modelName = os.path.join(modelDirectory,modelName)
-		model = torch.load(modelName, map_location='cpu') # since models were trained on GPU, but are being used on CPU
+		else:
+			coupled = False
+			modelList = []
+
+			for jointIndex in range(totalJoints):
+				if useErrorModel:
+					modelName = "error" + str(jointIndex) + ".pt"
+				else:
+					modelName = "torque" + str(jointIndex) + ".pt"
+
+				modelName = os.path.join(modelDirectory,modelName)
+				model = torch.load(modelName, map_location='cpu') # since models were trained on GPU, but are being used on CPU
+				modelList = modelList + [model]
+
+
 
 		# Declaring publishers and subscribers
-		rospy.Subscriber("/nnData", JointState, makePrediction) # Listening to data from the task execution node
-
+		if (learningMethod == "ANN" or gravCompMethod == "ANN"):
+			if ANN_Coupled == True:
+				rospy.Subscriber("/nnData", JointState, makePrediction) # Listening to data from the task execution node
+			else:
+				rospy.Subscriber("/nnData", JointState, makePrediction_split) # Listening to data from the task execution node
+			
 		nnPredictionPub = rospy.Publisher("/nnPrediction",JointState,queue_size=1) # Joint state pos - ff torque pred, velocity - grav comp tau pred
 		
 		r = rospy.Rate(pubFreq)

@@ -1,6 +1,5 @@
 > edit param.yaml
-> edit dataProcessingScripts/KUKADHfunctions.py in accordance with the DH parameters of the manipulator
- 
+
 Quick Visualisation of recorded data
 > ./0_quickViz.sh
 
@@ -12,3 +11,7 @@ For usual non or semi parametric learning
 
 Visualising the processed and sub-sampled data
 > ./4_visualise.sh
+
+
+OPTIONAL:
+For comparison between predictions by different models, use OPTIONAL.sh 

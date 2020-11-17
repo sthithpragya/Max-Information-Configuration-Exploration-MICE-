@@ -1,7 +1,7 @@
 # Filepath to learnt_models
-modelDirectory: "/home/sthithpragya/Study/Thesis/learning/learnt_models"
+modelDirectory: "/home/farshad/farshadws/InvDyn_Learning/learnt_models/ANN_Full"
 # Path for saving the results from static and dynamic execution
-savePath: "/home/sthithpragya/Study/Thesis/data_for_learning/recordings/testing_meh" 
+savePath: "/home/farshad/farshadws/InvDyn_Learning/recorded_data/results_static_usual"
 
 meanDataFileName: "trainDataMean.txt"
 stdDataFileName: "trainDataStd.txt"
@@ -27,8 +27,8 @@ pubFreq: 200
 # MODEL TESTING
 
 # > Model to test (for predciting the feedforward torques)
-# learningMethod: "ANN"
-learningMethod: "URDF"
+learningMethod: "ANN"
+# learningMethod: "URDF"
 # learningMethod: "nuSVR"
 
 # Method to use for computing the joint torques for cancelling the internally applied gravity compensation torques 
@@ -36,6 +36,8 @@ learningMethod: "URDF"
 gravCompMethod: "URDF"
 # gravCompMethod: "nuSVR"
 
+# ANN Parameters
+ANN_Coupled: true
 
 # > Torque vs Error model
 useErrorModel: false # True - Use the Error model, False - Use Torque Model
@@ -45,20 +47,28 @@ dynamicExecution: false
 #False - Static execution task: Comparing predicted and actual joint torques during stationary poses
 #True - Dynamic execution task: Comparing position and velocity errors during trajectory tracking
 
+# Test Now or later
+testNow: False # If testing now, predict FF torque for trajectory tracking or gravity compensation on the fly
+               # Else, just record the trajectory and torque data
+
 DT: 0.005
+
+recordingResultantTorque: true
+# True:  Sensor readings = -(applied torque)
+# False: Sensor readings = applied torque
 
 #------------------------------------------------------------------------
 
 # STATIC TESTING PARAMETERS
 # Acceptable errors during Static execution when reaching the allocated stationary position
-qError: 0.1
-qDotError: 0.05
-qdDotError: 10
+qError: 0.01
+qDotError: 0.001
+qdDotError: 1000
 
 #------------------------------------------------------------------------
 
 # DYNAMIC TESTING PARAMETERS
-varFreq: True # To periodically change the frequency of the test sinusoidal trajectory or not
+varFreq: false # To periodically change the frequency of the test sinusoidal trajectory or not
 frequencyPeriod: 5 # Period after which the frequency is changed
 
 # > Forces to use during trajectory tracking
@@ -83,7 +93,12 @@ accStat: 2
 # 2 - Desired
 # 3 - Approximated (q_dot_t - q_dot_t-1)/dt
 
-kInit: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+kInit: [0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15]
+# kInit: [0.22, 0.23, 0.24, 0.25, 0.26, 0.21, 0.22]
+# kInit: [0.28, 0.28, 0.28, 0.28, 0.28, 0.28, 0.28]
+
+# kInit: [0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.4]
+
 phInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 betaInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 thetaInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -100,7 +115,7 @@ thetaInit: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 # checkingGravComp: false # if true, set posStat = 1, accStat = 0, velStat = 0
 # # # gravCompTraj: "startStop"
 # # gravCompTraj: "sinusoid"
-realTimePred: false
+# realTimePred: false
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!
 # ----- to change -----
@@ -112,7 +127,7 @@ totalJoints: 7
 
 qLimLower:
   - -2.7925 
-  - -2.00
+  - -1.0
   - -2.7925
   - -1.9198
   - -2.7925
@@ -121,7 +136,7 @@ qLimLower:
 
 qLimUpper:
   - 2.7925 
-  - 2.00
+  - 1.0
   - 2.7925
   - 1.9198
   - 2.7925
@@ -187,7 +202,7 @@ qDotStart:
 #   - 2.0
 #   - 2.0
 
-## LowIntermed
+# LowIntermed
 # torquePropGain:
 #   - 27.5
 #   - 90.0
@@ -206,29 +221,49 @@ qDotStart:
 #   - 1.75
 #   - 1.75
 
-## Intermed
+# ## Intermed
+# torquePropGain:
+#   - 31.0
+#   - 100.0
+#   - 42.0
+#   - 42.0
+#   - 15.25
+#   - 3.0
+#   - 3.0
+
+# torqueDerGain:
+#   - 15.0
+#   - 50.0
+#   - 21.0
+#   - 21.0
+#   - 7.5
+#   - 1.5
+#   - 1.5
+
+
+## Intermed ++++
 torquePropGain:
-  - 31.0
-  - 100.0
-  - 42.0
-  - 42.0
-  - 15.25
-  - 3.0
-  - 3.0
+  - 54.0
+  - 172.0
+  - 72.0
+  - 72.0
+  - 28.0
+  - 5.2
+  - 5.2
 
 torqueDerGain:
-  - 15.0
-  - 50.0
-  - 21.0
-  - 21.0
-  - 7.5
-  - 1.5
-  - 1.5
+  - 27.0
+  - 86.0
+  - 36.0
+  - 36.0
+  - 14.0
+  - 2.0
+  - 2.0
 
-## High
+## High**
 # torquePropGain:
 #   - 37.5
-#   - 120.0
+#   - 180.0
 #   - 60.0
 #   - 60.0
 #   - 19.0
@@ -237,10 +272,29 @@ torqueDerGain:
 
 # torqueDerGain:
 #   - 19.0
-#   - 60.0
+#   - 90.0
 #   - 30.0
 #   - 30.0
-#   - 10.00
+#   - 10.0
 #   - 0.8
 #   - 0.8
-#------------------------------------------------------------------------
+
+## High
+# torquePropGain:
+#   - 86.0
+#   - 250.0
+#   - 130.0
+#   - 130.0
+#   - 36.0
+#   - 6.0
+#   - 6.0
+
+# torqueDerGain:
+#   - 36.0
+#   - 108.0
+#   - 54.0
+#   - 54.0
+#   - 18.0
+#   - 4.0
+#   - 4.0
+# #------------------------------------------------------------------------

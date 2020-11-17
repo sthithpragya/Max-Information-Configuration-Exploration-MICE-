@@ -78,7 +78,7 @@ if useArtificialVel:
 
 	ArtificialVelData = pandas.read_csv(ArtificialVel, names=jointVelNames)
 
-	nanRowsVel = ArtificialVelData.T.isnull().any()
+	nanRowsVel = ArtificialVelData.T.isnull().all()
 
 	ArtificialVelData = ArtificialVelData[~nanRowsVel]
 	AJdata = AJdata[~nanRowsVel]
@@ -88,7 +88,7 @@ if useArtificialVel:
 	DTdata = DTdata[~nanRowsVel]
 
 	# Removing duplicate entries.
-	zeroRowsVel = (ArtificialVelData.T != 0).any()
+	zeroRowsVel = (ArtificialVelData.T != 0).all()
 	ArtificialVelData = ArtificialVelData[zeroRowsVel]
 	AJdata = AJdata[zeroRowsVel]
 	timeData = timeData[zeroRowsVel]
@@ -127,7 +127,7 @@ AJaccData = pandas.read_csv(AJacc, names=jointAccNames)
 print("> Cleaning the data")
 
 # Removing the NaN rows to downsample the data
-nanRows = AJaccData.T.isnull().any()
+nanRows = AJaccData.T.isnull().all()
 AJaccData = AJaccData[~nanRows]
 AJdata = AJdata[~nanRows]
 timeData = timeData[~nanRows]
@@ -135,14 +135,14 @@ DJdata = DJdata[~nanRows]
 ATdata = ATdata[~nanRows]
 DTdata = DTdata[~nanRows]
 
-# Removing duplicate entries. 
-zeroRows = (AJaccData.T != 0).any()
-AJaccData = AJaccData[zeroRows]
-AJdata = AJdata[zeroRows]
-timeData = timeData[zeroRows]
-DJdata = DJdata[zeroRows]  
-ATdata = ATdata[zeroRows]
-DTdata = DTdata[zeroRows]
+# # Removing duplicate entries. 
+# zeroRows = (AJaccData.T != 0).all()
+# AJaccData = AJaccData[zeroRows]
+# AJdata = AJdata[zeroRows]
+# timeData = timeData[zeroRows]
+# DJdata = DJdata[zeroRows]  
+# ATdata = ATdata[zeroRows]
+# DTdata = DTdata[zeroRows]
 
 
 # The processed data

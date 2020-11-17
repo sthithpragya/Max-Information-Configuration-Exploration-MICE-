@@ -32,6 +32,7 @@ toRecord = False            # Regulates when to record data
                             # For dynamic execution, always true
                             # For static execution, true only during the stationary pose
 
+testNow = False
 
 dt = 0.005
 prevTimeInstance = 0
@@ -46,12 +47,12 @@ def processTimeElapsed(topicData): # time elapsed
     prevTimeInstance = topicData.data
     timeElapsedDataCheck = True
 
-def processDesiredJointData(topicData): 
+def processDesiredJointData(topicData):
     global desiredJointData, desiredJointDataCheck
     desiredJointData = topicData.position + topicData.velocity 
     desiredJointDataCheck = True
 
-def processActualJointData(topicData): 
+def processActualJointData(topicData):
     global actualJointData, actualJointDataCheck, toRecord, prevJointVel, currentJointAcc
     actualJointData = topicData.position + topicData.velocity + topicData.effort
     actualJointDataCheck = True
@@ -66,7 +67,7 @@ def processActualJointData(topicData):
     else:
         toRecord = True
 
-def processPredJointTorque(topicData): 
+def processPredJointTorque(topicData):
     global predJointTorque, predJointTorqueCheck 
     predJointTorque = topicData.position + topicData.velocity + topicData.effort
     predJointTorqueCheck = True
@@ -76,6 +77,8 @@ def recorder():
 
     global timeElapsedData, actualJointData, desiredJointData, predJointTorque, qDotError, dynamicExecution, qdDotError
     global prevJointVel, currentJointAcc, currentJointVel
+    global testNow
+
     rospy.init_node('recorder', anonymous=True)
 
     totalJoints = rospy.get_param("/totalJoints")
@@ -85,6 +88,7 @@ def recorder():
     qDotError = rospy.get_param("/qDotError")
     qdDotError = rospy.get_param("/qdDotError")
     dynamicExecution = rospy.get_param("/dynamicExecution")
+    testNow = rospy.get_param("/testNow")
 
     if not os.path.exists(savePath):
         os.makedirs(savePath)
@@ -119,23 +123,34 @@ def recorder():
     obsTE = open(timeElapsedDataFileName, "w")
     obsAJ = open(actualJointDataFileName, "w")
     obsDJ = open(desiredJointDataFileName, "w")
-    obsPT = open(predJointTorqueFileName, "w")
+
+    if testNow:
+        obsPT = open(predJointTorqueFileName, "w")
 
     rospy.Subscriber('/ElapsedTimeTracker', Float64, processTimeElapsed)
     rospy.Subscriber('/desPoseBreakup', JointState, processDesiredJointData)
     rospy.Subscriber(robotJointState, JointState, processActualJointData)
-    rospy.Subscriber('/torqueBreakup', JointState, processPredJointTorque)
+
+    if testNow:
+        rospy.Subscriber('/torqueBreakup', JointState, processPredJointTorque)
     
     r = rospy.Rate(pubFreq) # should do this at a specified frequency or at callback rate?
 
     while not rospy.is_shutdown():
 
-        if(timeElapsedDataCheck == actualJointDataCheck == desiredJointDataCheck == predJointTorqueCheck):
-            csv.writer(obsTE).writerow(timeElapsedData)
-            csv.writer(obsAJ).writerow(actualJointData)
-            csv.writer(obsDJ).writerow(desiredJointData)
-            csv.writer(obsPT).writerow(predJointTorque)
-            
+        if testNow:
+            if(timeElapsedDataCheck == actualJointDataCheck == desiredJointDataCheck == predJointTorqueCheck==toRecord):
+                csv.writer(obsTE).writerow(timeElapsedData)
+                csv.writer(obsAJ).writerow(actualJointData)
+                csv.writer(obsDJ).writerow(desiredJointData)
+                csv.writer(obsPT).writerow(predJointTorque)
+    
+        else:
+            if(timeElapsedDataCheck == actualJointDataCheck == desiredJointDataCheck == toRecord):
+                    csv.writer(obsTE).writerow(timeElapsedData)
+                    csv.writer(obsAJ).writerow(actualJointData)
+                    csv.writer(obsDJ).writerow(desiredJointData)
+                
         r.sleep()
 
 if __name__ == '__main__':

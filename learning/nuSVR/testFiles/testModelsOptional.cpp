@@ -16,23 +16,24 @@ int main()
 
     int totalJoints = paramLoaded["totalJoints"].as<int>();
     string savePath = paramLoaded["savePath"].as<string>();
+    string learntModelLoc = paramLoaded["learntModelLoc"].as<string>();
     bool learnErrorModel = paramLoaded["learnErrorModel"].as<bool>();
     
     int startModelIndex = paramLoaded["startModelIndex"].as<int>();
     int endModelIndex = paramLoaded["endModelIndex"].as<int>();
 
     string testDataFileName;
-    string dataName;
+    string modelName;
     string resultName;
 
     if(learnErrorModel){
         testDataFileName = savePath + "/sparseFormat/sparseErrorTestData";
-        dataName = "sparseErrorTrainData";
+        modelName = "error";
         resultName = "nuSVR_Error_predictions_test";
     }
     else{
         testDataFileName = savePath + "/sparseFormat/sparseTestData";
-        dataName = "sparseTrainData";
+        modelName = "torque";
         resultName = "nuSVR_Full_predictions_test";
     }
 
@@ -44,22 +45,22 @@ int main()
     double epsilon = paramLoaded["epsilon"].as<double>();
     double nu = paramLoaded["nu"].as<double>();
 
-    string testAccFileName = "testAcc.txt";
-    std::ofstream outfile;
+    // string testAccFileName = "testAcc.txt";
+    // std::ofstream outfile;
 
     for(int modelIndex = startModelIndex; modelIndex < endModelIndex; modelIndex = modelIndex + 1){
 
-        outfile.open(testAccFileName, std::ios_base::app); // append instead of overwrite
-        outfile << "---------------------";
-        outfile << "\n";
+        // outfile.open(testAccFileName, std::ios_base::app); // append instead of overwrite
+        // outfile << "---------------------";
+        // outfile << "\n";
 
         string currenTestDataFile = testDataFileName + to_string(modelIndex) + dataExtension;
-        string currentTrainedModelFile = dataName + to_string(modelIndex) + modelExtension;
+        string currentTrainedModelFile = learntModelLoc + "/" + modelName + to_string(modelIndex) + modelExtension;
         string currentResultFileName = savePath + "/" + resultName + to_string(modelIndex) + ".csv";
 
         char testCommand[75];
-        sprintf (testCommand, "./thundersvmPackage/build/bin/thundersvm-predict %s %s %s | tee -a %s", currenTestDataFile.c_str(), currentTrainedModelFile.c_str(), currentResultFileName.c_str(), testAccFileName.c_str());
+        sprintf (testCommand, "./thundersvmPackage/build/bin/thundersvm-predict %s %s %s", currenTestDataFile.c_str(), currentTrainedModelFile.c_str(), currentResultFileName.c_str());
         system(testCommand);
-        outfile.close();
+        // outfile.close();
     }
 }
