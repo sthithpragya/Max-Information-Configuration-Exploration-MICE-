@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  3 14:25:19 2020
-
-@author: Amanhoud Walid
-"""
-
 import torch
 from torch import nn
 from torch.nn import functional as F

@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Aug  3 20:02:44 2020
-
-@author: Amanhoud Walid
-"""
-
 import torch
 import torch.nn.functional as F
 import itertools

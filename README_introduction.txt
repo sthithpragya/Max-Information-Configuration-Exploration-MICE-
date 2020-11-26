@@ -6,7 +6,6 @@ ________________________________________________________________________________
 	Contains 4 sub-packages:
 		1) data_collection
 		2) data_processing
-		2') data_processing_extended
 		3) learning
 		4) testing_ID (requires +)
 		5) error_computation (requires *)
@@ -25,12 +24,6 @@ ________________________________________________________________________________
 	> Removes the noise and repeated entries (if any) from data
 	> Computes joint-accelarations
 	> Subsamples the data and prepared training and test sets
-
-2') data_processing_extended:
-	> Same functionality as data_processing
-	> Also implements the relevance score-based subsampling strategy
-	> Also has provision to fit GMM to data and compute the sequential batch-wise entropies
-	> Also provision to plot entropies of different datasets
 
 3) learning:
 	> Implements parametric least squared regression method to find optimal physical parameters of the robot
